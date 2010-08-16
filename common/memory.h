@@ -70,7 +70,7 @@ namespace Vc
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-template<typename V, unsigned int Size = 0u> class Memory : public VectorAlignedBase, public MemoryBase<V, Memory<V, Size> >
+template<typename V, size_t Size = 0u> class Memory : public VectorAlignedBase, public MemoryBase<V, Memory<V, Size> >
 {
     public:
         typedef typename V::EntryType EntryType;
@@ -91,8 +91,8 @@ template<typename V, unsigned int Size = 0u> class Memory : public VectorAligned
             EntriesCount = Size,
             VectorsCount = PaddedSize / V::Size
         };
-        inline unsigned int entriesCount() const { return EntriesCount; }
-        inline unsigned int vectorsCount() const { return VectorsCount; }
+        inline size_t entriesCount() const { return EntriesCount; }
+        inline size_t vectorsCount() const { return VectorsCount; }
 
         template<typename Parent>
         inline Memory<V> &operator=(const MemoryBase<V, Parent> &rhs) {
@@ -105,7 +105,7 @@ template<typename V, unsigned int Size = 0u> class Memory : public VectorAligned
             return *this;
         }
         inline Memory &operator=(const V &v) {
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) = v;
             }
             return *this;
@@ -158,12 +158,12 @@ template<typename V> class Memory<V, 0u> : public MemoryBase<V, Memory<V, 0u> >
             Alignment = V::Size,
             AlignmentMask = Alignment - 1
         };
-        unsigned int m_entriesCount;
-        unsigned int m_vectorsCount;
+        size_t m_entriesCount;
+        size_t m_vectorsCount;
         EntryType *m_mem;
-        unsigned int calcVectorsCount(unsigned int x)
+        size_t calcVectorsCount(size_t x)
         {
-            unsigned int masked = x & AlignmentMask;
+            size_t masked = x & AlignmentMask;
             return (masked == 0 ? x : x + (Alignment - masked)) / V::Size;
         }
     public:
@@ -174,7 +174,7 @@ template<typename V> class Memory<V, 0u> : public MemoryBase<V, Memory<V, 0u> >
          *
          * The allocated memory is aligned and padded correctly for fully vectorized access.
          */
-        inline Memory(unsigned int size)
+        inline Memory(size_t size)
             : m_entriesCount(size),
             m_vectorsCount(calcVectorsCount(m_entriesCount)),
             m_mem(reinterpret_cast<EntryType *>(new V[m_vectorsCount]))
@@ -187,8 +187,8 @@ template<typename V> class Memory<V, 0u> : public MemoryBase<V, Memory<V, 0u> >
         {
             delete[] reinterpret_cast<V *>(m_mem);
         }
-        inline unsigned int entriesCount() const { return m_entriesCount; }
-        inline unsigned int vectorsCount() const { return m_vectorsCount; }
+        inline size_t entriesCount() const { return m_entriesCount; }
+        inline size_t vectorsCount() const { return m_vectorsCount; }
 
         /**
          * Overwrite all entries with the values stored in rhs. This function requires the

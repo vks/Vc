@@ -136,19 +136,19 @@ template<typename V, typename Parent> class MemoryBase
          * Returns the number of scalar entries in the array. This function is optimized away
          * if a constant size array is used.
          */
-        inline unsigned int entriesCount() const { return p()->entriesCount(); }
+        inline size_t entriesCount() const { return p()->entriesCount(); }
         /**
          * Returns the number of vector entries that span the array. This function is optimized away
          * if a constant size array is used.
          */
-        inline unsigned int vectorsCount() const { return p()->vectorsCount(); }
+        inline size_t vectorsCount() const { return p()->vectorsCount(); }
 
         /**
          * Returns the \p i-th scalar value in the memory.
          */
-        inline EntryType &scalar(unsigned int i) { return entries()[i]; }
+        inline EntryType &scalar(size_t i) { return entries()[i]; }
         /// Const overload of the above function.
-        inline const EntryType scalar(unsigned int i) const { return entries()[i]; }
+        inline const EntryType scalar(size_t i) const { return entries()[i]; }
 
         /**
          * Returns a pointer to the start of the allocated memory.
@@ -183,11 +183,11 @@ template<typename V, typename Parent> class MemoryBase
          *
          * This function ensures that only \em aligned loads and stores are used. Thus it only allows to
          * access memory at fixed strides. If access to known offsets from the aligned vectors is
-         * needed the vector(unsigned int, int) function can be used.
+         * needed the vector(size_t, int) function can be used.
          */
-        inline VectorPointerHelper<V, AlignedFlag> vector(unsigned int i) { return &entries()[i * V::Size]; }
+        inline VectorPointerHelper<V, AlignedFlag> vector(size_t i) { return &entries()[i * V::Size]; }
         /// Const overload of the above function.
-        inline const VectorPointerHelperConst<V, AlignedFlag> vector(unsigned int i) const { return &entries()[i * V::Size]; }
+        inline const VectorPointerHelperConst<V, AlignedFlag> vector(size_t i) const { return &entries()[i * V::Size]; }
 
         /**
          * Returns a smart object to wrap the \p i-th vector + \p shift in the memory.
@@ -204,7 +204,7 @@ template<typename V, typename Parent> class MemoryBase
          *
          * \note Any shift value is allowed as long as you make sure it stays within bounds of the
          * allocated memory. Shift values that are a multiple of \p V::Size will \em not result in
-         * aligned loads. You have to use the above vector(unsigned int) function for aligned loads
+         * aligned loads. You have to use the above vector(size_t) function for aligned loads
          * instead.
          *
          * \note Thus a simple way to access vectors randomly is to set \p i to 0 and use \p shift as the
@@ -216,9 +216,9 @@ template<typename V, typename Parent> class MemoryBase
          * mem.vector(0, i) += 1;
          * \endcode
          */
-        inline VectorPointerHelper<V, UnalignedFlag> vector(unsigned int i, int shift) { return &entries()[i * V::Size + shift]; }
+        inline VectorPointerHelper<V, UnalignedFlag> vector(size_t i, int shift) { return &entries()[i * V::Size + shift]; }
         /// Const overload of the above function.
-        inline const VectorPointerHelperConst<V, UnalignedFlag> vector(unsigned int i, int shift) const { return &entries()[i * V::Size + shift]; }
+        inline const VectorPointerHelperConst<V, UnalignedFlag> vector(size_t i, int shift) const { return &entries()[i * V::Size + shift]; }
 
         /**
          * Returns the first vector in the allocated memory.
@@ -245,7 +245,7 @@ template<typename V, typename Parent> class MemoryBase
 
         inline void setZero() {
             V zero(Vc::Zero);
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) = zero;
             }
         }
@@ -253,7 +253,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline Parent &operator+=(const MemoryBase<V, P2> &rhs) {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) += rhs.vector(i);
             }
             return static_cast<Parent &>(*this);
@@ -261,7 +261,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline Parent &operator-=(const MemoryBase<V, P2> &rhs) {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) -= rhs.vector(i);
             }
             return static_cast<Parent &>(*this);
@@ -269,7 +269,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline Parent &operator*=(const MemoryBase<V, P2> &rhs) {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) *= rhs.vector(i);
             }
             return static_cast<Parent &>(*this);
@@ -277,35 +277,35 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline Parent &operator/=(const MemoryBase<V, P2> &rhs) {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) /= rhs.vector(i);
             }
             return static_cast<Parent &>(*this);
         }
         inline Parent &operator+=(EntryType rhs) {
             V v(rhs);
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) += v;
             }
             return static_cast<Parent &>(*this);
         }
         inline Parent &operator-=(EntryType rhs) {
             V v(rhs);
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) -= v;
             }
             return static_cast<Parent &>(*this);
         }
         inline Parent &operator*=(EntryType rhs) {
             V v(rhs);
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) *= v;
             }
             return static_cast<Parent &>(*this);
         }
         inline Parent &operator/=(EntryType rhs) {
             V v(rhs);
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 vector(i) /= v;
             }
             return static_cast<Parent &>(*this);
@@ -313,7 +313,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator==(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) == V(rhs.vector(i))).isFull()) {
                     return false;
                 }
@@ -323,7 +323,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator!=(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) == V(rhs.vector(i))).isEmpty()) {
                     return false;
                 }
@@ -333,7 +333,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator<(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) < V(rhs.vector(i))).isFull()) {
                     return false;
                 }
@@ -343,7 +343,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator<=(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) <= V(rhs.vector(i))).isFull()) {
                     return false;
                 }
@@ -353,7 +353,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator>(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) > V(rhs.vector(i))).isFull()) {
                     return false;
                 }
@@ -363,7 +363,7 @@ template<typename V, typename Parent> class MemoryBase
         template<typename P2>
         inline bool operator>=(const MemoryBase<V, P2> &rhs) const {
             assert(vectorsCount() == rhs.vectorsCount());
-            for (unsigned int i = 0; i < vectorsCount(); ++i) {
+            for (size_t i = 0; i < vectorsCount(); ++i) {
                 if (!(V(vector(i)) >= V(rhs.vector(i))).isFull()) {
                     return false;
                 }

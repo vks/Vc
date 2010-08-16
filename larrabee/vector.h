@@ -31,7 +31,7 @@
 
 namespace Vc
 {
-    template<typename V, unsigned int Size> class Memory;
+    template<typename V, size_t Size> class Memory;
 #ifndef HAVE_FLOAT16
 #define HAVE_FLOAT16
 #ifdef HALF_MAX

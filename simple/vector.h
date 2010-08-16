@@ -36,7 +36,7 @@
 
 namespace Vc
 {
-    template<typename V, unsigned int Size> class Memory;
+    template<typename V, size_t Size> class Memory;
 namespace Simple
 {
     enum { VectorAlignment = 4 };
