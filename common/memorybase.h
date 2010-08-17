@@ -21,6 +21,7 @@
 #define VC_COMMON_MEMORYBASE_H
 
 #include <assert.h>
+#include "macros.h"
 
 namespace Vc
 {
@@ -37,7 +38,7 @@ template<typename V, typename A> class VectorPointerHelperConst
 {
     typedef typename V::EntryType EntryType;
     typedef typename V::Mask Mask;
-    const EntryType *const m_ptr;
+    const EntryType *__restrict__ const m_ptr;
     public:
         VectorPointerHelperConst(const EntryType *ptr) : m_ptr(ptr) {}
 
@@ -71,7 +72,7 @@ template<typename V, typename A> class VectorPointerHelper
 {
     typedef typename V::EntryType EntryType;
     typedef typename V::Mask Mask;
-    EntryType *const m_ptr;
+    EntryType *__restrict__ const m_ptr;
     public:
         VectorPointerHelper(EntryType *ptr) : m_ptr(ptr) {}
 
@@ -243,10 +244,33 @@ template<typename V, typename Parent> class MemoryBase
         inline V gather(const unsigned int   *indexes) const { return V(entries(), indexes); }
         inline V gather(const unsigned long  *indexes) const { return V(entries(), indexes); }
 
-        inline void setZero() {
-            V zero(Vc::Zero);
-            for (size_t i = 0; i < vectorsCount(); ++i) {
-                vector(i) = zero;
+        inline void setZero() ALWAYS_INLINE {
+            set(V::Zero());
+        }
+
+        inline void set(const EntryType v) ALWAYS_INLINE {
+            V tmp(v);
+            set(tmp);
+        }
+
+        inline void set(const V v) {
+            EntryType *const start = entries();
+            EntryType *const mid = entries() + 4096 / sizeof(V);
+            EntryType *m = entries() + vectorsCount() * V::Size;
+            while (m > mid) {
+                v.store(m - 0 * V::Size, Streaming);
+                v.store(m - 1 * V::Size, Streaming);
+                v.store(m - 2 * V::Size, Streaming);
+                v.store(m - 3 * V::Size, Streaming);
+                v.store(m - 4 * V::Size, Streaming);
+                v.store(m - 5 * V::Size, Streaming);
+                v.store(m - 6 * V::Size, Streaming);
+                v.store(m - 7 * V::Size, Streaming);
+                m -= 8 * V::Size;
+            }
+            while (m > start) {
+                v.store(m);
+                m -= V::Size;
             }
         }
 
@@ -374,4 +398,5 @@ template<typename V, typename Parent> class MemoryBase
 
 } // namespace Vc
 
+#include "undomacros.h"
 #endif // VC_COMMON_MEMORYBASE_H

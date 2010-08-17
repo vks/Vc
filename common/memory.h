@@ -160,7 +160,7 @@ template<typename V> class Memory<V, 0u> : public MemoryBase<V, Memory<V, 0u> >
         };
         size_t m_entriesCount;
         size_t m_vectorsCount;
-        EntryType *m_mem;
+        EntryType *__restrict__ m_mem;
         size_t calcVectorsCount(size_t x)
         {
             size_t masked = x & AlignmentMask;
