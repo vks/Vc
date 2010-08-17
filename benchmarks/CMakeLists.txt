@@ -27,6 +27,7 @@ vc_add_benchmark(math)
 vc_add_benchmark(memio)
 vc_add_benchmark(dhryrock)
 vc_add_benchmark(whetrock)
+vc_add_benchmark(membench)
 
 add_executable(sort_benchmark sort.cpp)
 target_link_libraries(sort_benchmark Vc ${LIBS})
