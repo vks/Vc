@@ -277,8 +277,10 @@ inline void Benchmark::Start()
 #elif defined(__APPLE__)
     fRealTime = mach_absolute_time();
 #else
-    clock_gettime( CLOCK_MONOTONIC, &fRealTime );
+#ifdef VC_USE_CPU_TIME
     clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &fCpuTime );
+#endif
+    clock_gettime( CLOCK_MONOTONIC, &fRealTime );
 #endif
     fTsc.Start();
 }
