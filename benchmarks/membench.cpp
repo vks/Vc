@@ -48,14 +48,10 @@ struct WorkItem
     Benchmark &__restrict__ timer;
     const size_t offset;
     const size_t size;
-    cpu_set_t cpumask;
 };
 
 void testBzero(WorkItem work)
 {
-    sched_setaffinity(0, sizeof(cpu_set_t), &work.cpumask);
-    sched_yield();
-
     work.timer.Start();
     bzero(work.m + work.offset * double_v::Size, work.size * sizeof(double_v));
     work.timer.Stop();
@@ -63,8 +59,6 @@ void testBzero(WorkItem work)
 
 void testAddOne(WorkItem work)
 {
-    sched_setaffinity(0, sizeof(cpu_set_t), &work.cpumask);
-    sched_yield();
     const double_v one = 1.;
 
     double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
@@ -82,9 +76,6 @@ void testAddOne(WorkItem work)
 
 void testRead(WorkItem work)
 {
-    sched_setaffinity(0, sizeof(cpu_set_t), &work.cpumask);
-    sched_yield();
-
     double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
     work.timer.Start();
     for (size_t i = 0; i < work.size; i += 4) {
@@ -127,6 +118,21 @@ static T valueForArgument(const char *name, T defaultValue)
     return defaultValue;
 }
 
+static void executeTest(const char *name, MemT &mem, void (*testFun)(WorkItem))
+{
+    for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
+        std::stringstream ss;
+        ss << name << ": " << offset * sizeof(double_v) / GB << " - "
+            << (offset + step) * sizeof(double_v) / GB;
+        Benchmark timer(ss.str().c_str(), step * 16, "Byte");
+        WorkItem item = { mem, timer, offset, step };
+        for (int rep = 0; rep < 2; ++rep) {
+            testFun(item);
+        }
+        timer.Print();
+    }
+}
+
 int bmain()
 {
     const size_t maxMemorySize = largestMemorySize() / GB;
@@ -156,39 +162,10 @@ int bmain()
         }
         CPU_ZERO(&cpumask);
         CPU_SET(cpuid, &cpumask);
-        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
-            std::stringstream ss;
-            ss << "bzero: " << offset * sizeof(double_v) / GB << " - "
-                << (offset + step) * sizeof(double_v) / GB;
-            Benchmark timer(ss.str().c_str(), step * 16, "Byte");
-            WorkItem item = { mem, timer, offset, step, cpumask };
-            for (int rep = 0; rep < 2; ++rep) {
-                testBzero(item);
-            }
-            timer.Print();
-        }
-        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
-            std::stringstream ss;
-            ss << "read: " << offset * sizeof(double_v) / GB << " - "
-                << (offset + step) * sizeof(double_v) / GB;
-            Benchmark timer(ss.str().c_str(), step * 16, "Byte");
-            WorkItem item = { mem, timer, offset, step, cpumask };
-            for (int rep = 0; rep < 2; ++rep) {
-                testRead(item);
-            }
-            timer.Print();
-        }
-        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
-            std::stringstream ss;
-            ss << "add 1: " << offset * sizeof(double_v) / GB << " - "
-                << (offset + step) * sizeof(double_v) / GB;
-            Benchmark timer(ss.str().c_str(), step * 16, "Byte");
-            WorkItem item = { mem, timer, offset, step, cpumask };
-            for (int rep = 0; rep < 2; ++rep) {
-                testAddOne(item);
-            }
-            timer.Print();
-        }
+        sched_setaffinity(0, sizeof(cpu_set_t), &cpumask);
+        executeTest("bzero", mem, &testBzero);
+        executeTest("read",  mem, &testRead);
+        executeTest("add 1", mem, &testAddOne);
         Benchmark::finalize();
     }
     return 0;
