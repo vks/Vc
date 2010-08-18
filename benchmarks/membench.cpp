@@ -30,10 +30,10 @@ static size_t largestMemorySize()
     using namespace std;
     fstream meminfo("/proc/meminfo", fstream::in);
     string tmp;
-    size_t totalMem;
-    meminfo >> tmp >> totalMem;
+    size_t totalMem, freeMem;
+    meminfo >> tmp >> totalMem >> tmp >> tmp >> freeMem;
     meminfo.close();
-    return totalMem * 1024 - 500000000;
+    return freeMem * 1024;
 }
 
 double blackHole = 0.;
