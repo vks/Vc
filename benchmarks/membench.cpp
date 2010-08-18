@@ -98,21 +98,47 @@ void testRead(WorkItem work)
     work.timer.Stop();
 }
 
-int bmain()
+template<typename T>
+struct convertStringTo
 {
-    size_t memorySize = largestMemorySize();
-    ArgumentVector::iterator sizeIt = std::find(g_arguments.begin(), g_arguments.end(), "--size");
-    if (sizeIt != g_arguments.end()) {
-        ++sizeIt;
-        if (sizeIt != g_arguments.end()) {
-            memorySize = atol(sizeIt->c_str());
+    explicit convertStringTo(const std::string &s);
+    operator T() { return m_data; }
+    T m_data;
+};
+
+template<> convertStringTo<int>::convertStringTo(const std::string &s) : m_data(atoi(s.c_str())) {}
+template<> convertStringTo<unsigned int>::convertStringTo(const std::string &s) : m_data(atoi(s.c_str())) {}
+template<> convertStringTo<long>::convertStringTo(const std::string &s) : m_data(atol(s.c_str())) {}
+template<> convertStringTo<unsigned long>::convertStringTo(const std::string &s) : m_data(atol(s.c_str())) {}
+template<> convertStringTo<long long>::convertStringTo(const std::string &s) : m_data(atoll(s.c_str())) {}
+template<> convertStringTo<unsigned long long>::convertStringTo(const std::string &s) : m_data(atoll(s.c_str())) {}
+template<> convertStringTo<std::string>::convertStringTo(const std::string &s) : m_data(s) {}
+
+template<typename T>
+static T valueForArgument(const char *name, T defaultValue)
+{
+    ArgumentVector::iterator it = std::find(g_arguments.begin(), g_arguments.end(), name);
+    if (it != g_arguments.end()) {
+        ++it;
+        if (it != g_arguments.end()) {
+            return convertStringTo<T>(*it);
         }
     }
-    if (memorySize < GB) {
-        std::cerr << "not enough memory. Need at least 1GB." << std::endl;
+    return defaultValue;
+}
+
+int bmain()
+{
+    const size_t maxMemorySize = largestMemorySize() / GB;
+    const size_t memorySize = valueForArgument("--size", maxMemorySize);
+    if (memorySize < 1) {
+        std::cerr << "Need at least 1GB." << std::endl;
         return 1;
     }
-    Memory<double_v> mem(memorySize / sizeof(double));
+    if (memorySize > maxMemorySize) {
+        std::cerr << "Not enough memory available. Expect crashes/OOM kills." << std::endl;
+    }
+    Memory<double_v> mem(memorySize * GB / sizeof(double));
     mlockall(MCL_CURRENT);
 
     cpu_set_t cpumask;
@@ -122,7 +148,7 @@ int bmain()
         ++cpucount;
     }
     Benchmark::addColumn("CPU_ID");
-    for (int cpuid = 1; cpuid < cpucount; cpuid += 6) {
+    for (int cpuid = valueForArgument("--firstCpu", 1); cpuid < cpucount; cpuid += valueForArgument("--cpuStep", 6)) {
         if (cpucount > 1) {
             std::ostringstream str;
             str << cpuid;
