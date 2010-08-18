@@ -100,7 +100,19 @@ void testRead(WorkItem work)
 
 int bmain()
 {
-    Memory<double_v> mem(largestMemorySize() / sizeof(double));
+    size_t memorySize = largestMemorySize();
+    ArgumentVector::iterator sizeIt = std::find(g_arguments.begin(), g_arguments.end(), "--size");
+    if (sizeIt != g_arguments.end()) {
+        ++sizeIt;
+        if (sizeIt != g_arguments.end()) {
+            memorySize = atol(sizeIt->c_str());
+        }
+    }
+    if (memorySize < GB) {
+        std::cerr << "not enough memory. Need at least 1GB." << std::endl;
+        return 1;
+    }
+    Memory<double_v> mem(memorySize / sizeof(double));
     mlockall(MCL_CURRENT);
 
     cpu_set_t cpumask;
@@ -118,7 +130,7 @@ int bmain()
         }
         CPU_ZERO(&cpumask);
         CPU_SET(cpuid, &cpumask);
-        for (size_t offset = 0; offset < mem.vectorsCount() - step; offset += step) {
+        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
             std::stringstream ss;
             ss << "bzero: " << offset * sizeof(double_v) / GB << " - "
                 << (offset + step) * sizeof(double_v) / GB;
@@ -129,7 +141,7 @@ int bmain()
             }
             timer.Print();
         }
-        for (size_t offset = 0; offset < mem.vectorsCount() - step; offset += step) {
+        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
             std::stringstream ss;
             ss << "read: " << offset * sizeof(double_v) / GB << " - "
                 << (offset + step) * sizeof(double_v) / GB;
@@ -140,7 +152,7 @@ int bmain()
             }
             timer.Print();
         }
-        for (size_t offset = 0; offset < mem.vectorsCount() - step; offset += step) {
+        for (size_t offset = 0; offset <= mem.vectorsCount() - step; offset += step) {
             std::stringstream ss;
             ss << "add 1: " << offset * sizeof(double_v) / GB << " - "
                 << (offset + step) * sizeof(double_v) / GB;
