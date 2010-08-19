@@ -36,13 +36,17 @@
         void operator delete[](void *ptr, size_t) { _mm_free(ptr); }
 
 #ifdef __GNUC__
-#define CONST __attribute__((const))
-#define MAY_ALIAS __attribute__((__may_alias__))
-#define ALWAYS_INLINE __attribute__((always_inline))
+#  define INTRINSIC __attribute__((__flatten__, __always_inline__, __artificial__))
+#  define CONST __attribute__((__const__))
+#  define PURE __attribute__((__pure__))
+#  define MAY_ALIAS __attribute__((__may_alias__))
+#  define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define CONST
-#define MAY_ALIAS
-#define ALWAYS_INLINE
+#  define INTRINSIC
+#  define CONST
+#  define PURE
+#  define MAY_ALIAS
+#  define ALWAYS_INLINE
 #endif
 
 #define CAT_HELPER(a, b) a##b
