@@ -36,7 +36,6 @@ vc_add_benchmark(math)
 vc_add_benchmark(memio)
 vc_add_benchmark(dhryrock)
 vc_add_benchmark(whetrock)
-vc_add_benchmark(membench)
 
 add_executable(sort_benchmark sort.cpp)
 target_link_libraries(sort_benchmark Vc ${LIBS})
@@ -52,6 +51,10 @@ vc_generate_plots(mask)
 vc_generate_plots(compare VC_DISABLE_PTEST)
 vc_generate_plots(math)
 vc_generate_plots(memio)
+
+add_executable(membench_sse membench.cpp)
+add_target_property(membench_sse COMPILE_FLAGS "-DVC_IMPL=SSE")
+target_link_libraries(membench_sse Vc ${LIBS})
 
 add_executable(constants constants.cpp)
 target_link_libraries(constants Vc ${LIBS})
