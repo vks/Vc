@@ -22,6 +22,7 @@
 #include "benchmark.h"
 #include <sys/mman.h>
 #include <fstream>
+#include "../cpuid.h"
 
 using namespace Vc;
 
@@ -42,85 +43,117 @@ static const size_t GB = 1024ull * 1024ull * 1024ull;
 static const size_t step = GB / sizeof(double_v);
 typedef Memory<double_v> MemT;
 
-struct WorkItem
+void testBzero(
+    MemT &__restrict__ m,
+    Benchmark &__restrict__ timer,
+    const size_t offset,
+    const size_t size,
+    const int repetitions
+        )
 {
-    MemT &__restrict__ m;
-    Benchmark &__restrict__ timer;
-    const size_t offset;
-    const size_t size;
-};
-
-void testBzero(WorkItem work)
-{
-    work.timer.Start();
-    bzero(work.m + work.offset * double_v::Size, work.size * sizeof(double_v));
-    work.timer.Stop();
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        bzero(m + offset * double_v::Size, size * sizeof(double_v));
+    }
+    timer.Stop();
 }
 
-void testAddOne(WorkItem work)
+void testAddOne(
+    MemT &__restrict__ mem,
+    Benchmark &__restrict__ timer,
+    const size_t offset,
+    const size_t size,
+    const int repetitions
+        )
 {
     const double_v one = 1.;
 
-    double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
+    double *__restrict__ m = mem.entries() + offset * double_v::Size;
 
-    work.timer.Start();
-    for (size_t i = 0; i < work.size; i += 4) {
-        (double_v(m + 0) + one).store(m + 0);
-        (double_v(m + 2) + one).store(m + 2);
-        (double_v(m + 4) + one).store(m + 4);
-        (double_v(m + 6) + one).store(m + 6);
-        m += 8;
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        for (size_t i = 0; i < size; i += 4) {
+            (double_v(m + 0) + one).store(m + 0);
+            (double_v(m + 2) + one).store(m + 2);
+            (double_v(m + 4) + one).store(m + 4);
+            (double_v(m + 6) + one).store(m + 6);
+            m += 8;
+        }
     }
-    work.timer.Stop();
+    timer.Stop();
 }
 
-void testAddOnePrefetch(WorkItem work)
+void testAddOnePrefetch(
+    MemT &__restrict__ mem,
+    Benchmark &__restrict__ timer,
+    const size_t offset,
+    const size_t size,
+    const int repetitions
+        )
 {
     const double_v one = 1.;
 
-    double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
+    double *__restrict__ m = mem.entries() + offset * double_v::Size;
 
-    work.timer.Start();
-    for (size_t i = 0; i < work.size; i += 4) {
-        Vc::prefetchForModify(m + 1024);
-        (double_v(m + 0) + one).store(m + 0);
-        (double_v(m + 2) + one).store(m + 2);
-        (double_v(m + 4) + one).store(m + 4);
-        (double_v(m + 6) + one).store(m + 6);
-        m += 8;
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        for (size_t i = 0; i < size; i += 4) {
+            Vc::prefetchForModify(m + 1024);
+            (double_v(m + 0) + one).store(m + 0);
+            (double_v(m + 2) + one).store(m + 2);
+            (double_v(m + 4) + one).store(m + 4);
+            (double_v(m + 6) + one).store(m + 6);
+            m += 8;
+        }
     }
-    work.timer.Stop();
+    timer.Stop();
 }
 
-void testRead(WorkItem work)
+void testRead(
+    MemT &__restrict__ mem,
+    Benchmark &__restrict__ timer,
+    const size_t offset,
+    const size_t size,
+    const int repetitions
+        )
 {
-    double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
-    work.timer.Start();
-    for (size_t i = 0; i < work.size; i += 4) {
-        const double_v v0(m + 0);
-        const double_v v1(m + 2);
-        const double_v v2(m + 4);
-        const double_v v3(m + 6);
-        asm("" :: "x"(v0.data()), "x"(v1.data()), "x"(v2.data()), "x"(v3.data()));
-        m += 8;
+    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        for (size_t i = 0; i < size; i += 4) {
+            const double_v v0(m + 0);
+            const double_v v1(m + 2);
+            const double_v v2(m + 4);
+            const double_v v3(m + 6);
+            asm("" :: "x"(v0.data()), "x"(v1.data()), "x"(v2.data()), "x"(v3.data()));
+            m += 8;
+        }
     }
-    work.timer.Stop();
+    timer.Stop();
 }
 
-void testReadPrefetch(WorkItem work)
+void testReadPrefetch(
+    MemT &__restrict__ mem,
+    Benchmark &__restrict__ timer,
+    const size_t offset,
+    const size_t size,
+    const int repetitions
+        )
 {
-    double *__restrict__ m = work.m.entries() + work.offset * double_v::Size;
-    work.timer.Start();
-    for (size_t i = 0; i < work.size; i += 4) {
-        Vc::prefetchForOneRead(m + 1024);
-        const double_v v0(m + 0);
-        const double_v v1(m + 2);
-        const double_v v2(m + 4);
-        const double_v v3(m + 6);
-        asm("" :: "x"(v0.data()), "x"(v1.data()), "x"(v2.data()), "x"(v3.data()));
-        m += 8;
+    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        for (size_t i = 0; i < size; i += 4) {
+            Vc::prefetchForOneRead(m + 1024);
+            const double_v v0(m + 0);
+            const double_v v1(m + 2);
+            const double_v v2(m + 4);
+            const double_v v3(m + 6);
+            asm("" :: "x"(v0.data()), "x"(v1.data()), "x"(v2.data()), "x"(v3.data()));
+            m += 8;
+        }
     }
-    work.timer.Stop();
+    timer.Stop();
 }
 
 template<typename T>
@@ -152,7 +185,8 @@ static T valueForArgument(const char *name, T defaultValue)
     return defaultValue;
 }
 
-static void executeTest(const char *name, MemT &mem, void (*testFun)(WorkItem))
+static void executeTest(const char *name, MemT &mem, void (*testFun)(MemT &__restrict__,
+            Benchmark &__restrict__, const size_t, const size_t, const int))
 {
     static std::string only = valueForArgument("--only", std::string());
     if (!only.empty() && only != name) {
@@ -162,12 +196,27 @@ static void executeTest(const char *name, MemT &mem, void (*testFun)(WorkItem))
         std::stringstream ss;
         ss << name << ": " << offset * sizeof(double_v) / GB << " - "
             << (offset + step) * sizeof(double_v) / GB;
-        Benchmark timer(ss.str().c_str(), step * 16, "Byte");
-        WorkItem item = { mem, timer, offset, step };
-        for (int rep = 0; rep < 2; ++rep) {
-            testFun(item);
+        {
+            Benchmark timer(ss.str().c_str(), step, "Byte");
+            for (int rep = 0; rep < 2; ++rep) {
+                testFun(mem, timer, offset, step / 16, 1);
+            }
+            timer.Print();
         }
-        timer.Print();
+
+        unsigned int l3Size = CpuId::L3Data();
+        if (l3Size > 0) {
+            l3Size *= 2;
+            l3Size /= 3;
+            ss.str(std::string());
+            ss << name << " (L3): " << offset * sizeof(double_v) / GB << " - "
+                << (offset + l3Size / 16) * sizeof(double_v) / GB;
+            Benchmark timer(ss.str().c_str(), l3Size, "Byte");
+            for (int rep = 0; rep < 2; ++rep) {
+                testFun(mem, timer, offset, l3Size / 16, step / l3Size);
+            }
+            timer.Print();
+        }
     }
 }
 
