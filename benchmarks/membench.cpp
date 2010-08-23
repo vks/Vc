@@ -204,16 +204,17 @@ static void executeTest(const char *name, MemT &mem, void (*testFun)(MemT &__res
             timer.Print();
         }
 
-        unsigned int l3Size = CpuId::L3Data();
+        size_t l3Size = CpuId::L3Data();
         if (l3Size > 0) {
             l3Size *= 2;
             l3Size /= 3;
             ss.str(std::string());
             ss << name << " (L3): " << offset * sizeof(double_v) / GB << " - "
                 << (offset + l3Size / 16) * sizeof(double_v) / GB;
-            Benchmark timer(ss.str().c_str(), l3Size, "Byte");
+            const int repetitions = step / l3Size;
+            Benchmark timer(ss.str().c_str(), l3Size * repetitions, "Byte");
             for (int rep = 0; rep < 2; ++rep) {
-                testFun(mem, timer, offset, l3Size / 16, step / l3Size);
+                testFun(mem, timer, offset, l3Size / 16, repetitions);
             }
             timer.Print();
         }
