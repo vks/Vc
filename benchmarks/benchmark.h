@@ -194,7 +194,7 @@ void Benchmark::FileWriter::addDataLine(const std::list<std::string> &data)
 #elif VC_IMPL_Scalar
             "\"Scalar\"";
 #else
-#error "Unknown Vc implementation"
+            "\"non-Vc\"";
 #endif
     for (std::list<ExtraColumn>::const_iterator i = m_extraColumns.begin();
             i != m_extraColumns.end(); ++i) {
@@ -624,7 +624,7 @@ ArgumentVector g_arguments;
 
 int bmain();
 
-#include <sched.h>
+#include "cpuset.h"
 
 int main(int argc, char **argv)
 {
@@ -679,10 +679,7 @@ int main(int argc, char **argv)
     } else {
         cpu_set_t cpumask;
         sched_getaffinity(0, sizeof(cpu_set_t), &cpumask);
-        int cpucount = 1;
-        while (CPU_ISSET(cpucount, &cpumask)) {
-            ++cpucount;
-        }
+        int cpucount = cpuCount(&cpumask);
         if (cpucount > 1) {
             Benchmark::addColumn("CPU_ID");
         }
@@ -693,8 +690,8 @@ int main(int argc, char **argv)
                     str << cpuid;
                     Benchmark::setColumnData("CPU_ID", str.str());
                 }
-                CPU_ZERO(&cpumask);
-                CPU_SET(cpuid, &cpumask);
+                cpuZero(&cpumask);
+                cpuSet(cpuid, &cpumask);
                 sched_setaffinity(0, sizeof(cpu_set_t), &cpumask);
                 r += bmain();
                 Benchmark::finalize();
@@ -706,8 +703,8 @@ int main(int argc, char **argv)
                 str << cpuid;
                 Benchmark::setColumnData("CPU_ID", str.str());
             }
-            CPU_ZERO(&cpumask);
-            CPU_SET(cpuid, &cpumask);
+            cpuZero(&cpumask);
+            cpuSet(cpuid, &cpumask);
             sched_setaffinity(0, sizeof(cpu_set_t), &cpumask);
             r += bmain();
             Benchmark::finalize();

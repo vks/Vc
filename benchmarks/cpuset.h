@@ -17,35 +17,22 @@
 
 */
 
-#ifndef VC_SCALAR_DEINTERLEAVE_H
-#define VC_SCALAR_DEINTERLEAVE_H
+#ifndef VC_CPUSET_H
+#define VC_CPUSET_H
 
-#include "macros.h"
+#include <sched.h>
 
-namespace Vc
-{
-namespace Internal
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-template<> struct HelperImpl<Vc::ScalarImpl>
-{
-    template<typename V, typename M, typename A>
-    static inline void ALWAYS_INLINE deinterleave(V &a, V &b, const M *mem, A)
-    {
-        a = mem[0];
-        b = mem[1];
-    }
+int cpuIsSet(size_t cpucount, const cpu_set_t *cpumask);
+int cpuCount(const cpu_set_t *cpumask);
+void cpuZero(cpu_set_t *mask);
+void cpuSet(size_t id, cpu_set_t *mask);
 
-    static inline void prefetchForOneRead(const void *) {}
-    static inline void prefetchForModify(const void *) {}
-    static inline void prefetchClose(const void *) {}
-    static inline void prefetchMid(const void *) {}
-    static inline void prefetchFar(const void *) {}
-};
+#ifdef __cplusplus
+}
+#endif
 
-} // namespace Scalar
-} // namespace Vc
-
-#include "undomacros.h"
-
-#endif // VC_SCALAR_DEINTERLEAVE_H
+#endif

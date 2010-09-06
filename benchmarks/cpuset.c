@@ -17,35 +17,32 @@
 
 */
 
-#ifndef VC_SCALAR_DEINTERLEAVE_H
-#define VC_SCALAR_DEINTERLEAVE_H
+#define _GNU_SOURCE
+#include <sched.h>
 
-#include "macros.h"
+#include "cpuset.h"
 
-namespace Vc
+int cpuIsSet(size_t cpucount, const cpu_set_t *cpumask)
 {
-namespace Internal
-{
+    return CPU_ISSET(cpucount, cpumask);
+}
 
-template<> struct HelperImpl<Vc::ScalarImpl>
+int cpuCount(const cpu_set_t *cpumask)
 {
-    template<typename V, typename M, typename A>
-    static inline void ALWAYS_INLINE deinterleave(V &a, V &b, const M *mem, A)
-    {
-        a = mem[0];
-        b = mem[1];
+    int cpucount = 1;
+    while (CPU_ISSET(cpucount, cpumask)) {
+        ++cpucount;
     }
+    return cpucount;
+}
 
-    static inline void prefetchForOneRead(const void *) {}
-    static inline void prefetchForModify(const void *) {}
-    static inline void prefetchClose(const void *) {}
-    static inline void prefetchMid(const void *) {}
-    static inline void prefetchFar(const void *) {}
-};
+void cpuZero(cpu_set_t *mask)
+{
+    CPU_ZERO(mask);
+}
 
-} // namespace Scalar
-} // namespace Vc
+void cpuSet(size_t id, cpu_set_t *mask)
+{
+    CPU_SET(id, mask);
+}
 
-#include "undomacros.h"
-
-#endif // VC_SCALAR_DEINTERLEAVE_H

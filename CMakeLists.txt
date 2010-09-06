@@ -39,6 +39,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
    ##################################################################################################
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wimplicit -Wswitch -Wformat -Wchar-subscripts -Wparentheses -Wmultichar -Wtrigraphs -Wpointer-arith -Wcast-align -Wreturn-type -Wno-unused-function -ansi -pedantic -Wno-long-long -Wshadow")
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wimplicit -Wswitch -Wformat -Wchar-subscripts -Wparentheses -Wmultichar -Wtrigraphs -Wpointer-arith -Wcast-align -Wreturn-type -Wno-unused-function -ansi -pedantic -Wno-long-long -Wshadow")
+   AddCompilerFlag("-Wold-style-cast")
    AddCompilerFlag("-Wno-variadic-macros")
    AddCompilerFlag("-fno-threadsafe-statics")
    set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -94,6 +95,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
          message(SEND_ERROR "Your binutils is too old (${_as_version}). The assembler will not be able to compile Vc.")
       endif(NOT _as_good)
    endif(NOT _binutils_as)
+   mark_as_advanced(_binutils_as)
 elseif(CMAKE_CXX_COMPILER MATCHES "/(icpc|icc)$")
    ##################################################################################################
    #                                          Intel Compiler                                        #
@@ -106,7 +108,8 @@ elseif(CMAKE_CXX_COMPILER MATCHES "/(icpc|icc)$")
 
    set(ALIAS_FLAGS "-no-ansi-alias")
    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      set(ENABLE_STRICT_ALIASING true CACHE BOOL "Enables strict aliasing rules for more aggressive optimizations")
+      # default ICC to -no-ansi-alias because otherwise tests/utils_sse fails. So far I suspect a miscompilation...
+      set(ENABLE_STRICT_ALIASING false CACHE BOOL "Enables strict aliasing rules for more aggressive optimizations")
       if(ENABLE_STRICT_ALIASING)
          set(ALIAS_FLAGS "-ansi-alias")
       endif(ENABLE_STRICT_ALIASING)

@@ -110,7 +110,11 @@ template<typename V, size_t Size = 0u> class Memory : public VectorAlignedBase, 
             }
             return *this;
         }
-};
+}
+#ifdef __INTEL_COMPILER
+__attribute__((__aligned__(__alignof(VectorAlignedBase))))
+#endif
+;
 
 /**
  * A helper class that is very similar to Memory<V, Size> but with dynamically allocated memory and
@@ -219,7 +223,7 @@ template<typename V> class Memory<V, 0u> : public MemoryBase<V, Memory<V, 0u> >
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-void ALWAYS_INLINE prefetchForOneRead(void *addr)
+void ALWAYS_INLINE prefetchForOneRead(const void *addr)
 {
     Internal::Helper::prefetchForOneRead(addr);
 }
@@ -234,7 +238,7 @@ void ALWAYS_INLINE prefetchForOneRead(void *addr)
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-void ALWAYS_INLINE prefetchForModify(void *addr)
+void ALWAYS_INLINE prefetchForModify(const void *addr)
 {
     Internal::Helper::prefetchForModify(addr);
 }
@@ -247,7 +251,7 @@ void ALWAYS_INLINE prefetchForModify(void *addr)
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-void ALWAYS_INLINE prefetchClose(void *addr)
+void ALWAYS_INLINE prefetchClose(const void *addr)
 {
     Internal::Helper::prefetchClose(addr);
 }
@@ -260,7 +264,7 @@ void ALWAYS_INLINE prefetchClose(void *addr)
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-void ALWAYS_INLINE prefetchMid(void *addr)
+void ALWAYS_INLINE prefetchMid(const void *addr)
 {
     Internal::Helper::prefetchMid(addr);
 }
@@ -273,7 +277,7 @@ void ALWAYS_INLINE prefetchMid(void *addr)
  * \ingroup Utilities
  * \headerfile memory.h <Vc/Memory>
  */
-void ALWAYS_INLINE prefetchFar(void *addr)
+void ALWAYS_INLINE prefetchFar(const void *addr)
 {
     Internal::Helper::prefetchFar(addr);
 }
