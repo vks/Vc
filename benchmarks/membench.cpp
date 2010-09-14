@@ -222,6 +222,13 @@ static void executeTest(const char *name, MemT &mem, void (*testFun)(MemT &__res
     }
 }
 
+SET_HELP_TEXT(
+        "  --firstCpu <id>\n"
+        "  --cpuStep <id>\n"
+        "  --size <GB>\n"
+        "  --only <test function>\n"
+        );
+
 int bmain()
 {
     const size_t maxMemorySize = largestMemorySize() / GB;
