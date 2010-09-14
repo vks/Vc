@@ -157,6 +157,50 @@ void testReadPrefetch(
     timer.Stop();
 }
 
+enum {
+    PageSize = 4096,
+    CacheLineSize = 64,
+
+    DoublesInPage = PageSize / sizeof(double),
+    VectorsInPage = PageSize / sizeof(double_v),
+    DoublesInCacheLine = CacheLineSize / sizeof(double),
+    VectorsInCacheLine = CacheLineSize / sizeof(double_v)
+};
+
+/**
+ * We want to measure the latency of a read from memory. To achieve this we read with a stride of
+ * PageSize bytes. Then the hardware prefetcher will not do any prefetches and every load will hit a
+ * cold cache line. To increase the working size the test then starts over but with an offset of one
+ * cache line:
+ * [x                               x                               ...]
+ * [        x                               x                       ...]
+ * [                x                               x               ...]
+ * [                        x                               x       ...]
+ */
+void testReadLatency(
+        MemT &__restrict__ mem,
+        Benchmark &__restrict__ timer,
+        const size_t offset,
+        const size_t size,
+        const int repetitions
+        )
+{
+    typedef double *__restrict__ Ptr;
+    Ptr const mStart = mem.entries() + offset * double_v::Size;
+    Ptr const mEnd = mStart + size * 2;
+    Ptr const mPageEnd = mStart + DoublesInPage;
+    timer.changeInterpretation(repetitions * size / VectorsInCacheLine, "read");
+    timer.Start();
+    for (int rep = 0; rep < repetitions; ++rep) {
+        for (Ptr mCacheLine = mStart; mCacheLine < mPageEnd; mCacheLine += DoublesInCacheLine) {
+            for (Ptr m = mCacheLine; m < mEnd; m += DoublesInPage) {
+                asm("" :: "r"(*m));
+            }
+        }
+    }
+    timer.Stop();
+}
+
 template<typename T>
 struct convertStringTo
 {
@@ -261,6 +305,7 @@ int bmain()
         executeTest("read w/ prefetch", mem, &testReadPrefetch);
         executeTest("add 1", mem, &testAddOne);
         executeTest("add 1 w/ prefetch", mem, &testAddOnePrefetch);
+        executeTest("read latency", mem, &testReadLatency);
         Benchmark::finalize();
     }
     return 0;
