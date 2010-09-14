@@ -23,6 +23,7 @@
 #include <sys/mman.h>
 #include <fstream>
 #include "../cpuid.h"
+#include "cpuset.h"
 
 using namespace Vc;
 
@@ -237,10 +238,7 @@ int bmain()
 
     cpu_set_t cpumask;
     sched_getaffinity(0, sizeof(cpu_set_t), &cpumask);
-    int cpucount = 1;
-    while (CPU_ISSET(cpucount, &cpumask)) {
-        ++cpucount;
-    }
+    int cpucount = cpuCount(&cpumask);
     Benchmark::addColumn("CPU_ID");
     for (int cpuid = valueForArgument("--firstCpu", 1); cpuid < cpucount; cpuid += valueForArgument("--cpuStep", 6)) {
         if (cpucount > 1) {
@@ -248,8 +246,8 @@ int bmain()
             str << cpuid;
             Benchmark::setColumnData("CPU_ID", str.str());
         }
-        CPU_ZERO(&cpumask);
-        CPU_SET(cpuid, &cpumask);
+        cpuZero(&cpumask);
+        cpuSet(cpuid, &cpumask);
         sched_setaffinity(0, sizeof(cpu_set_t), &cpumask);
         executeTest("bzero", mem, &testBzero);
         executeTest("read",  mem, &testRead);
