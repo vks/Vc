@@ -12,7 +12,7 @@ BEGIN {
       name  = substr(a[1], 2)
       if(length(filter) == 0 || index(name, filter) == 1) {
          cpu   = a[3]
-         value = a[8]
+         value = a[valueIndex]
 
          if(cpu != lastcpu) {
             row = 1
@@ -21,7 +21,11 @@ BEGIN {
             outHeader[col] = "CPU" cpu
          }
          data[row, 1] = name
-         data[row, col] = value
+         if(invert) {
+            data[row, col] = 1.0 / value
+         } else {
+            data[row, col] = value
+         }
          ++row
       }
    }
@@ -32,7 +36,7 @@ BEGIN {
    for(r = 1; r < row; ++r) {
       printf("\"%s\"\t", data[r, 1]);
       for(c = 2; c <= col; ++c) {
-         printf("%d\t", data[r, c]);
+         printf("%f\t", data[r, c]);
       }
       print ""
    }
