@@ -224,16 +224,6 @@ template<typename Vec> void testAnd()
     COMPARE((c & 0x7ff0), Vec(zero));
 }
 
-template<typename A, typename B> struct isEqualType
-{
-    operator bool() const { return false; }
-};
-
-template<typename T> struct isEqualType<T, T>
-{
-    operator bool() const { return true; }
-};
-
 template<typename Vec> void testShift()
 {
     Vec a(1);
@@ -243,13 +233,6 @@ template<typename Vec> void testShift()
     COMPARE((a << 1), b);
     COMPARE((a << 2), (a << 2));
     COMPARE((a << 2), (b << 1));
-
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && __GNUC__ == 4 && __GNUC_MINOR__ == 3 && __OPTIMIZE__ && VC_IMPL_SSE
-    // gcc 4.3.x miscompiles when optimizing
-    if (isEqualType<Vec, uint_v>() || isEqualType<Vec, ushort_v>()) {
-        EXPECT_FAILURE();
-    }
-#endif
 
     Vec shifts(IndexesFromZero);
     a <<= shifts;
