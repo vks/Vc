@@ -69,10 +69,11 @@ void testAddOne(
 {
     const double_v one = 1.;
 
-    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    double *__restrict__ mStart = mem.entries() + offset * double_v::Size;
 
     timer.Start();
     for (int rep = 0; rep < repetitions; ++rep) {
+        double *__restrict__ m = mStart;
         for (size_t i = 0; i < size; i += 4) {
             (double_v(m + 0) + one).store(m + 0);
             (double_v(m + 2) + one).store(m + 2);
@@ -94,10 +95,11 @@ void testAddOnePrefetch(
 {
     const double_v one = 1.;
 
-    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    double *__restrict__ mStart = mem.entries() + offset * double_v::Size;
 
     timer.Start();
     for (int rep = 0; rep < repetitions; ++rep) {
+        double *__restrict__ m = mStart;
         for (size_t i = 0; i < size; i += 4) {
             Vc::prefetchForModify(m + 1024);
             (double_v(m + 0) + one).store(m + 0);
@@ -118,9 +120,10 @@ void testRead(
     const int repetitions
         )
 {
-    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    double *__restrict__ mStart = mem.entries() + offset * double_v::Size;
     timer.Start();
     for (int rep = 0; rep < repetitions; ++rep) {
+        double *__restrict__ m = mStart;
         for (size_t i = 0; i < size; i += 4) {
             const double_v v0(m + 0);
             const double_v v1(m + 2);
@@ -141,9 +144,10 @@ void testReadPrefetch(
     const int repetitions
         )
 {
-    double *__restrict__ m = mem.entries() + offset * double_v::Size;
+    double *__restrict__ mStart = mem.entries() + offset * double_v::Size;
     timer.Start();
     for (int rep = 0; rep < repetitions; ++rep) {
+        double *__restrict__ m = mStart;
         for (size_t i = 0; i < size; i += 4) {
             Vc::prefetchForOneRead(m + 1024);
             const double_v v0(m + 0);
