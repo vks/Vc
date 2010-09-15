@@ -31,10 +31,11 @@ for title in ${testnames}; do
 	echo -n "#" > "$csv"
 	if echo "$title" | grep -q "latency"; then
 		gawk -f "$dir/membenchProcess.awk" "-vfilter=$title:" "-vvalueIndex=10" "-vinvert=1" "$1" >> "$csv"
-		lmaxy="[40:65]"
+		lmaxy="[0:65]"
 		ylabel="Latency [cycles/read]"
 	else
 		gawk -f "$dir/membenchProcess.awk" "-vfilter=$title:" "-vvalueIndex=8" "-vinvert=0" "$1" >> "$csv"
+		lmaxy="[0:]"
 		ylabel="Throughput [bytes/cycle]"
 	fi
 	head=`cat "$csv"|head -n1|cut -f2-`
