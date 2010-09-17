@@ -36,7 +36,7 @@ for title in ${testnames}; do
 	else
 		gawk -f "$dir/membenchProcess.awk" "-vfilter=$title:" "-vvalueIndex=8" "-vinvert=0" "$1" >> "$csv"
 		lmaxy="[0:]"
-		ylabel="Throughput [bytes/cycle]"
+		ylabel="Throughput [bytes/second]"
 	fi
 	head=`cat "$csv"|head -n1|cut -f2-`
 	width=`cat "$csv"|wc -l`
