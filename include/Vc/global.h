@@ -30,9 +30,20 @@
 #define SSE4_2 9875301
 #define SSE4a  9875302
 #define AVX    9875303
+#define XOP    9875304
+#define FMA4   9875305
+#define XOP_FMA4   9875306
+#define FMA4_XOP   9875306
+#define AVX1   9875307
 
 #ifndef VC_IMPL
 
+#  if defined(__FMA4__)
+#    define VC_IMPL_FMA4 1
+#  endif
+#  if defined(__XOP__)
+#    define VC_IMPL_XOP 1
+#  endif
 #  if defined(__AVX__)
 #    define VC_IMPL_AVX 1
 #  else
@@ -72,8 +83,26 @@
 
 #else // VC_IMPL
 
-#  if VC_IMPL == AVX // AVX supersedes SSE
+#  if VC_IMPL == XOP_FMA4
+#    define VC_IMPL_XOP 1
+#    define VC_IMPL_FMA4 1
 #    define VC_IMPL_AVX 1
+#  elif VC_IMPL == XOP
+#    define VC_IMPL_XOP 1
+#    define VC_IMPL_AVX 1
+#  elif VC_IMPL == FMA4
+#    define VC_IMPL_FMA4 1
+#    define VC_IMPL_AVX 1
+#  elif VC_IMPL == AVX1 // AVX supersedes SSE
+#    define VC_IMPL_AVX 1
+#  elif VC_IMPL == AVX // AVX supersedes SSE
+#    define VC_IMPL_AVX 1
+#    if defined(__FMA4__)
+#      define VC_IMPL_FMA4 1
+#    endif
+#    if defined(__XOP__)
+#      define VC_IMPL_XOP 1
+#    endif
 #  elif VC_IMPL == Scalar
 #    define VC_IMPL_Scalar 1
 #  elif VC_IMPL == LRBni
@@ -146,6 +175,8 @@
 #    undef VC_IMPL_SSE4_2
 #    undef VC_IMPL_SSSE3
 #    undef VC_IMPL_AVX
+#    undef VC_IMPL_XOP
+#    undef VC_IMPL_FMA4
 #    undef VC_IMPL_LRBni
 #    define VC_IMPL_Scalar 1
 #  endif
@@ -165,6 +196,11 @@
 #undef SSE4_2
 #undef SSE4a
 #undef AVX
+#undef XOP
+#undef FMA4
+#undef XOP_FMA4
+#undef FMA4_XOP
+#undef AVX1
 #undef Scalar
 #undef LRBni
 
