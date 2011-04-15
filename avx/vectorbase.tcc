@@ -27,6 +27,88 @@ namespace Vc
 namespace AVX
 {
 
+#ifdef VC_IMPL_XOP
+template<> inline Vector<int> &VectorBase<int>::operator<<=(const VectorBase<int> &x)
+{
+    d.v() = concat(_mm_shl_epi32(lo128(d.v()), lo128(x.d.v())),
+            _mm_shl_epi32(hi128(d.v()), hi128(x.d.v())));
+    return *static_cast<Vector<int> *>(this);
+}
+template<> inline Vector<int>  VectorBase<int>::operator<<(const VectorBase<int> &x) const
+{
+    return Vector<int>(concat(_mm_shl_epi32(lo128(d.v()), lo128(x.d.v())),
+                _mm_shl_epi32(hi128(d.v()), hi128(x.d.v()))));
+}
+template<> inline Vector<unsigned int> &VectorBase<unsigned int>::operator<<=(const VectorBase<unsigned int> &x)
+{
+    d.v() = concat(_mm_shl_epi32(lo128(d.v()), lo128(x.d.v())),
+            _mm_shl_epi32(hi128(d.v()), hi128(x.d.v())));
+    return *static_cast<Vector<unsigned int> *>(this);
+}
+template<> inline Vector<unsigned int>  VectorBase<unsigned int>::operator<<(const VectorBase<unsigned int> &x) const
+{
+    return Vector<unsigned int>(concat(_mm_shl_epi32(lo128(d.v()), lo128(x.d.v())),
+                _mm_shl_epi32(hi128(d.v()), hi128(x.d.v()))));
+}
+template<> inline Vector<short> &VectorBase<short>::operator<<=(const VectorBase<short> &x)
+{
+    d.v() = _mm_shl_epi16(d.v(), x.d.v());
+    return *static_cast<Vector<short> *>(this);
+}
+template<> inline Vector<short>  VectorBase<short>::operator<<(const VectorBase<short> &x) const
+{
+    return Vector<short>(_mm_shl_epi16(d.v(), x.d.v()));
+}
+template<> inline Vector<unsigned short> &VectorBase<unsigned short>::operator<<=(const VectorBase<unsigned short> &x)
+{
+    d.v() = _mm_shl_epi16(d.v(), x.d.v());
+    return *static_cast<Vector<unsigned short> *>(this);
+}
+template<> inline Vector<unsigned short>  VectorBase<unsigned short>::operator<<(const VectorBase<unsigned short> &x) const
+{
+    return Vector<unsigned short>(_mm_shl_epi16(d.v(), x.d.v()));
+}
+template<> inline Vector<int> &VectorBase<int>::operator>>=(const VectorBase<int> &x)
+{
+    d.v() = concat(_mm_shl_epi32(lo128(d.v()), _mm_sign_epi32(lo128(x.d.v()), _mm_setallone_si128())),
+            _mm_shl_epi32(hi128(d.v()), _mm_sign_epi32(hi128(x.d.v()), _mm_setallone_si128())));
+    return *static_cast<Vector<int> *>(this);
+}
+template<> inline Vector<int>  VectorBase<int>::operator>>(const VectorBase<int> &x) const
+{
+    return Vector<int>(concat(_mm_shl_epi32(lo128(d.v()), _mm_sign_epi32(lo128(x.d.v()), _mm_setallone_si128())),
+            _mm_shl_epi32(hi128(d.v()), _mm_sign_epi32(hi128(x.d.v()), _mm_setallone_si128()))));
+}
+template<> inline Vector<unsigned int> &VectorBase<unsigned int>::operator>>=(const VectorBase<unsigned int> &x)
+{
+    d.v() = concat(_mm_shl_epi32(lo128(d.v()), _mm_sign_epi32(lo128(x.d.v()), _mm_setallone_si128())),
+            _mm_shl_epi32(hi128(d.v()), _mm_sign_epi32(hi128(x.d.v()), _mm_setallone_si128())));
+    return *static_cast<Vector<unsigned int> *>(this);
+}
+template<> inline Vector<unsigned int>  VectorBase<unsigned int>::operator>>(const VectorBase<unsigned int> &x) const
+{
+    return Vector<unsigned int>(concat(_mm_shl_epi32(lo128(d.v()), _mm_sign_epi32(lo128(x.d.v()), _mm_setallone_si128())),
+            _mm_shl_epi32(hi128(d.v()), _mm_sign_epi32(hi128(x.d.v()), _mm_setallone_si128()))));
+}
+template<> inline Vector<short> &VectorBase<short>::operator>>=(const VectorBase<short> &x)
+{
+    d.v() = _mm_shl_epi16(d.v(), _mm_sign_epi16(x.d.v(), _mm_setallone_si128()));
+    return *static_cast<Vector<short> *>(this);
+}
+template<> inline Vector<short>  VectorBase<short>::operator>>(const VectorBase<short> &x) const
+{
+    return Vector<short>(_mm_shl_epi16(d.v(), _mm_sign_epi16(x.d.v(), _mm_setallone_si128())));
+}
+template<> inline Vector<unsigned short> &VectorBase<unsigned short>::operator>>=(const VectorBase<unsigned short> &x)
+{
+    d.v() = _mm_shl_epi16(d.v(), _mm_sign_epi16(x.d.v(), _mm_setallone_si128()));
+    return *static_cast<Vector<unsigned short> *>(this);
+}
+template<> inline Vector<unsigned short>  VectorBase<unsigned short>::operator>>(const VectorBase<unsigned short> &x) const
+{
+    return Vector<unsigned short>(_mm_shl_epi16(d.v(), _mm_sign_epi16(x.d.v(), _mm_setallone_si128())));
+}
+#else
 #define OP_IMPL(T, symbol) \
 template<> inline Vector<T> &VectorBase<T>::operator symbol##=(const VectorBase<T> &x) \
 { \
@@ -52,6 +134,7 @@ OP_IMPL(short, >>)
 OP_IMPL(unsigned short, <<)
 OP_IMPL(unsigned short, >>)
 #undef OP_IMPL
+#endif
 
 #define OP_IMPL(T, PREFIX, SUFFIX) \
 template<> inline Vector<T> & INTRINSIC CONST VectorBase<T>::operator<<=(int x) \
