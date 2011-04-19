@@ -74,7 +74,7 @@ template<typename T> class Vector
         static inline VectorType _cast(__m256i v) INTRINSIC { avx_cast<VectorType>(v); }
         static inline VectorType _cast(__m256d v) INTRINSIC { avx_cast<VectorType>(v); }
 
-        typedef Common::VectorMemoryUnion<VectorType, EntryType> StorageType;
+        typedef typename StorageTypeHelper<T>::Type StorageType;
         StorageType d;
 
     public:

@@ -94,10 +94,9 @@ do {} while ( false )
 #ifndef _VC_STATIC_ASSERT_TYPES_H
 #define _VC_STATIC_ASSERT_TYPES_H
 namespace Vc {
-    namespace {
-        template<bool> class STATIC_ASSERT_FAILURE;
-        template<> class STATIC_ASSERT_FAILURE<true> {};
-}}
+    template<bool> class STATIC_ASSERT_FAILURE;
+    template<> class STATIC_ASSERT_FAILURE<true> {};
+}
 #endif // _VC_STATIC_ASSERT_TYPES_H
 
 #define VC_STATIC_ASSERT_NC(cond, msg) \

@@ -22,6 +22,7 @@
 
 #include "intrinsics.h"
 #include "../common/storage.h"
+#include "storage.h"
 #include "macros.h"
 
 namespace Vc
@@ -63,6 +64,16 @@ namespace AVX
 
     template<typename T> struct HasVectorDivisionHelper { enum { Value = 1 }; };
     //template<> struct HasVectorDivisionHelper<unsigned int> { enum { Value = 0 }; };
+
+    template<typename T> struct StorageTypeHelper {
+        typedef Common::VectorMemoryUnion<typename VectorTypeHelper<T>::Type, T> Type;
+    };
+    template<> struct StorageTypeHelper<int> {
+        typedef AVX::VectorMemoryUnion<__m256i, __m128i, int> Type;
+    };
+    template<> struct StorageTypeHelper<unsigned int> {
+        typedef AVX::VectorMemoryUnion<__m256i, __m128i, unsigned int> Type;
+    };
 
     template<typename T> struct VectorHelperSize;
 
