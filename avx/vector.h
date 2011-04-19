@@ -205,14 +205,12 @@ template<typename T> class Vector
         OP1(abs)
 #undef OP1
 
-#define OP(symbol, fun) \
-        inline Vector &operator symbol##=(const Vector<T> &x) ALWAYS_INLINE { data() = VectorHelper<T>::fun(data(), x.data()); return *this; } \
-        inline Vector operator symbol(const Vector<T> &x) const ALWAYS_INLINE { return Vector<T>(VectorHelper<T>::fun(data(), x.data())); }
-
-        OP(+, add)
-        OP(-, sub)
-        OP(*, mul)
-#undef OP
+        inline Vector &operator+=(const Vector<T> &x) ALWAYS_INLINE;
+        inline Vector  operator+ (const Vector<T> &x) const ALWAYS_INLINE;
+        inline Vector &operator-=(const Vector<T> &x) ALWAYS_INLINE;
+        inline Vector  operator- (const Vector<T> &x) const ALWAYS_INLINE;
+        inline Vector &operator*=(const Vector<T> &x) ALWAYS_INLINE;
+        inline Vector  operator* (const Vector<T> &x) const ALWAYS_INLINE;
         inline Vector &operator/=(EntryType x);
         inline Vector  operator/ (EntryType x) const;
         inline Vector &operator/=(const Vector<T> &x);

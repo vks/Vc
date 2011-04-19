@@ -288,6 +288,99 @@ template<> inline Vector<double> INTRINSIC PURE Vector<double>::operator/(const 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+//// addition
+template<typename T> inline Vector<T> &Vector<T>::operator+=(const Vector<T> &x) {
+    d.v() = VectorHelper<T>::add(data(), x.data()); return *this;
+}
+template<typename T> inline Vector<T> Vector<T>::operator+(const Vector<T> &x) const {
+    return Vector<T>(VectorHelper<T>::add(data(), x.data()));
+}
+template<> inline Vector<int> &Vector<int>::operator+=(const Vector<int> &x) {
+    d.x(0) = _mm_add_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_add_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<int> Vector<int>::operator+(const Vector<int> &x) const {
+    Vector<int> r;
+    r.d.x(0) = _mm_add_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_add_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+template<> inline Vector<unsigned int> &Vector<unsigned int>::operator+=(const Vector<unsigned int> &x) {
+    d.x(0) = _mm_add_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_add_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<unsigned int> Vector<unsigned int>::operator+(const Vector<unsigned int> &x) const {
+    Vector<unsigned int> r;
+    r.d.x(0) = _mm_add_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_add_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//// subtraction
+template<typename T> inline Vector<T> &Vector<T>::operator-=(const Vector<T> &x) {
+    d.v() = VectorHelper<T>::sub(data(), x.data()); return *this;
+}
+template<typename T> inline Vector<T> Vector<T>::operator-(const Vector<T> &x) const {
+    return Vector<T>(VectorHelper<T>::sub(data(), x.data()));
+}
+template<> inline Vector<int> &Vector<int>::operator-=(const Vector<int> &x) {
+    d.x(0) = _mm_sub_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_sub_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<int> Vector<int>::operator-(const Vector<int> &x) const {
+    Vector<int> r;
+    r.d.x(0) = _mm_sub_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_sub_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+template<> inline Vector<unsigned int> &Vector<unsigned int>::operator-=(const Vector<unsigned int> &x) {
+    d.x(0) = _mm_sub_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_sub_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<unsigned int> Vector<unsigned int>::operator-(const Vector<unsigned int> &x) const {
+    Vector<unsigned int> r;
+    r.d.x(0) = _mm_sub_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_sub_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//// multiplication
+template<typename T> inline Vector<T> &Vector<T>::operator*=(const Vector<T> &x) {
+    d.v() = VectorHelper<T>::mul(data(), x.data()); return *this;
+}
+template<typename T> inline Vector<T> Vector<T>::operator*(const Vector<T> &x) const {
+    return Vector<T>(VectorHelper<T>::mul(data(), x.data()));
+}
+template<> inline Vector<int> &Vector<int>::operator*=(const Vector<int> &x) {
+    d.x(0) = _mm_mullo_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_mullo_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<int> Vector<int>::operator*(const Vector<int> &x) const {
+    Vector<int> r;
+    r.d.x(0) = _mm_mullo_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_mullo_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+template<> inline Vector<unsigned int> &Vector<unsigned int>::operator*=(const Vector<unsigned int> &x) {
+    d.x(0) = _mm_mullo_epi32(d.x(0), x.d.x(0));
+    d.x(1) = _mm_mullo_epi32(d.x(1), x.d.x(1));
+    return *this;
+}
+template<> inline Vector<unsigned int> Vector<unsigned int>::operator*(const Vector<unsigned int> &x) const {
+    Vector<unsigned int> r;
+    r.d.x(0) = _mm_mullo_epi32(d.x(0), x.d.x(0));
+    r.d.x(1) = _mm_mullo_epi32(d.x(1), x.d.x(1));
+    return r;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 //// integer ops
 #define OP_IMPL(T, symbol) \
 template<> inline Vector<T> &Vector<T>::operator symbol##=(Vector<T> x) \
