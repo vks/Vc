@@ -404,30 +404,94 @@ OP_IMPL(unsigned short, <<)
 OP_IMPL(unsigned short, >>)
 #undef OP_IMPL
 
-#define OP_IMPL(T, PREFIX, SUFFIX) \
-template<> inline Vector<T> & INTRINSIC CONST Vector<T>::operator<<=(int x) \
-{ \
-    d.v() = CAT3(PREFIX, _slli_epi, SUFFIX)(d.v(), x); \
-    return *this; \
-} \
-template<> inline Vector<T> & INTRINSIC CONST Vector<T>::operator>>=(int x) \
-{ \
-    d.v() = CAT3(PREFIX, _srli_epi, SUFFIX)(d.v(), x); \
-    return *this; \
-} \
-template<> inline Vector<T> INTRINSIC CONST Vector<T>::operator<<(int x) const \
-{ \
-    return CAT3(PREFIX, _slli_epi, SUFFIX)(d.v(), x); \
-} \
-template<> inline Vector<T> INTRINSIC CONST Vector<T>::operator>>(int x) const \
-{ \
-    return CAT3(PREFIX, _srli_epi, SUFFIX)(d.v(), x); \
+template<> inline Vector<int> & INTRINSIC Vector<int>::operator<<=(int x)
+{
+    d.x(0) = _mm_slli_epi32(d.x(0), x);
+    d.x(1) = _mm_slli_epi32(d.x(1), x);
+    return *this;
 }
-OP_IMPL(int, _mm256, 32)
-OP_IMPL(unsigned int, _mm256, 32)
-OP_IMPL(short, _mm, 16)
-OP_IMPL(unsigned short, _mm, 16)
-#undef OP_IMPL
+template<> inline Vector<int> & INTRINSIC Vector<int>::operator>>=(int x)
+{
+    d.x(0) = _mm_srli_epi32(d.x(0), x);
+    d.x(1) = _mm_srli_epi32(d.x(1), x);
+    return *this;
+}
+template<> inline Vector<int> INTRINSIC CONST Vector<int>::operator<<(int x) const
+{
+    Vector<int> r;
+    r.d.x(0) = _mm_slli_epi32(d.x(0), x);
+    r.d.x(1) = _mm_slli_epi32(d.x(1), x);
+    return r;
+}
+template<> inline Vector<int> INTRINSIC CONST Vector<int>::operator>>(int x) const
+{
+    Vector<int> r;
+    r.d.x(0) = _mm_srli_epi32(d.x(0), x);
+    r.d.x(1) = _mm_srli_epi32(d.x(1), x);
+    return r;
+}
+template<> inline Vector<unsigned int> & INTRINSIC Vector<unsigned int>::operator<<=(int x)
+{
+    d.x(0) = _mm_slli_epi32(d.x(0), x);
+    d.x(1) = _mm_slli_epi32(d.x(1), x);
+    return *this;
+}
+template<> inline Vector<unsigned int> & INTRINSIC Vector<unsigned int>::operator>>=(int x)
+{
+    d.x(0) = _mm_srli_epi32(d.x(0), x);
+    d.x(1) = _mm_srli_epi32(d.x(1), x);
+    return *this;
+}
+template<> inline Vector<unsigned int> INTRINSIC CONST Vector<unsigned int>::operator<<(int x) const
+{
+    Vector<unsigned int> r;
+    r.d.x(0) = _mm_slli_epi32(d.x(0), x);
+    r.d.x(1) = _mm_slli_epi32(d.x(1), x);
+    return r;
+}
+template<> inline Vector<unsigned int> INTRINSIC CONST Vector<unsigned int>::operator>>(int x) const
+{
+    Vector<unsigned int> r;
+    r.d.x(0) = _mm_srli_epi32(d.x(0), x);
+    r.d.x(1) = _mm_srli_epi32(d.x(1), x);
+    return r;
+}
+template<> inline Vector<short> & INTRINSIC Vector<short>::operator<<=(int x)
+{
+    d.v() = _mm_slli_epi16(d.v(), x);
+    return *this;
+}
+template<> inline Vector<short> & INTRINSIC Vector<short>::operator>>=(int x)
+{
+    d.v() = _mm_srli_epi16(d.v(), x);
+    return *this;
+}
+template<> inline Vector<short> INTRINSIC CONST Vector<short>::operator<<(int x) const
+{
+    return _mm_slli_epi16(d.v(), x);
+}
+template<> inline Vector<short> INTRINSIC CONST Vector<short>::operator>>(int x) const
+{
+    return _mm_srli_epi16(d.v(), x);
+}
+template<> inline Vector<unsigned short> & INTRINSIC Vector<unsigned short>::operator<<=(int x)
+{
+    d.v() = _mm_slli_epi16(d.v(), x);
+    return *this;
+}
+template<> inline Vector<unsigned short> & INTRINSIC Vector<unsigned short>::operator>>=(int x)
+{
+    d.v() = _mm_srli_epi16(d.v(), x);
+    return *this;
+}
+template<> inline Vector<unsigned short> INTRINSIC CONST Vector<unsigned short>::operator<<(int x) const
+{
+    return _mm_slli_epi16(d.v(), x);
+}
+template<> inline Vector<unsigned short> INTRINSIC CONST Vector<unsigned short>::operator>>(int x) const
+{
+    return _mm_srli_epi16(d.v(), x);
+}
 
 #define OP_IMPL(T, symbol, fun) \
   template<> inline Vector<T> &Vector<T>::operator symbol##=(Vector<T> x) { d.v() = VectorHelper<T>::fun(d.v(), x.d.v()); return *this; } \
