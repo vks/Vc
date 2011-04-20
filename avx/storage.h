@@ -30,11 +30,12 @@ namespace AVX
 template<typename VectorType1, typename VectorType2, typename EntryType>
 class VectorMemoryUnion
 {
-    VC_STATIC_ASSERT_NC(sizeof(VectorType1) >= sizeof(VectorType2), VectorType1_must_be_larger_than_VectorType2);
     public:
         typedef EntryType AliasingEntryType MAY_ALIAS;
         typedef VectorType2 AliasingVectorType MAY_ALIAS;
-        inline VectorMemoryUnion() {}
+        inline VectorMemoryUnion() {
+            VC_STATIC_ASSERT(sizeof(VectorType1) >= sizeof(VectorType2), VectorType1_must_be_larger_than_VectorType2);
+        }
 #ifdef __INTEL_COMPILER
         inline VectorMemoryUnion(VectorType1 y) { data.y = y; }
         inline VectorMemoryUnion &operator=(VectorType1 y) {
