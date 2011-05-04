@@ -46,6 +46,10 @@ fi
 # test if the input file exists and execute it
 test -f "$2" && source "$2"
 
+test -z "$VC_SOURCEDIR" && VC_SOURCEDIR="`dirname $0`"
+cd "$VC_SOURCEDIR"
+export VC_SOURCEDIR="$PWD" # making sure VC_SOURCEDIR is an absolute path
+
 # set the ctest model to command line parameter
 export ctest_model=$1
 
@@ -57,9 +61,9 @@ chip=$(uname -m | tr '[A-Z]' '[a-z]')
 # environment variables used by ctest
 SYSTEM=$arch-$chip
 if test -z "$CXX" ; then
-  COMPILER="`g++ --version|head -n1`"
+  COMPILER="`g++ --version 2>&1|head -n1`"
 else
-  COMPILER="`"$CXX" --version|head -n1`"
+  COMPILER="`"$CXX" --version 2>&1|head -n1`"
 fi
 branch=`cat .git/HEAD|cut -d/ -f3`
 
@@ -92,11 +96,7 @@ echo "Model: ${ctest_model}"
 echo "Nr. of processes: " $number_of_processors
 echo "************************"
 
-test -z "$VC_SOURCEDIR" && VC_SOURCEDIR="`dirname $0`"
-cd "$VC_SOURCEDIR"
-export VC_SOURCEDIR="$PWD" # making sure VC_SOURCEDIR is an absolute path
-
 test -z "$VC_BUILDDIR" && export VC_BUILDDIR="$VC_SOURCEDIR/build-${ctest_model}-${LABEL//[\[\] ()]/_}"
 test -d "$VC_BUILDDIR" || mkdir -p "$VC_BUILDDIR"
 
-ctest -S test.cmake -V
+ctest --debug -S test.cmake -V 2>&1 | tee $VC_BUILDDIR/ctest-debug.log
