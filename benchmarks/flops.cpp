@@ -51,7 +51,33 @@ int bmain()
     {
         Benchmark timer("asm reference", 2 * 8 * float_v::Size * Factor, "FLOP");
         while (timer.wantsMoreDataPoints()) {
-#if VC_IMPL_SSE
+#if VC_IMPL_FMA4
+            __m256 x[6] = { _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()) };
+            const __m256 y = _mm256_set1_ps(randomF12());
+            int i = Factor * 8 / 6;
+            asm volatile("":: "x"(x[0]), "x"(x[1]), "x"(x[2]), "x"(x[3]), "x"(x[4]), "x"(x[5]));
+            timer.Start();
+            ///////////////////////////////////////
+            asm(
+                    //".align 32\n\t"
+                    "0: "
+                    "vfmaddps %7,%0,%7,%0\n\t"
+                    "vfmaddps %7,%1,%7,%1\n\t"
+                    "vfmaddps %7,%2,%7,%2\n\t"
+                    "vfmaddps %7,%3,%7,%3\n\t"
+                    "vfmaddps %7,%4,%7,%4\n\t"
+                    "vfmaddps %7,%5,%7,%5\n\t"
+                    "dec      %6\n\t"
+                    "jne 0b"         "\n\t"
+                    : "+x"(x[0]), "+x"(x[1]), "+x"(x[2]), "+x"(x[3]), "+x"(x[4]), "+x"(x[5]), "+r"(i)
+                    : "x"(y)
+                       );
+            ///////////////////////////////////////
+            timer.Stop();
+
+            asm volatile("":: "x"(x[0]), "x"(x[1]), "x"(x[2]), "x"(x[3]), "x"(x[4]), "x"(x[5]));
+
+#elif VC_IMPL_SSE
             __m128 x[8] = { _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()) };
             const __m128 y = _mm_set1_ps(randomF12());
 
