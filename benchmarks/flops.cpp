@@ -77,6 +77,72 @@ int bmain()
 
             asm volatile("":: "x"(x[0]), "x"(x[1]), "x"(x[2]), "x"(x[3]), "x"(x[4]), "x"(x[5]));
 
+#elif VC_IMPL_AVX
+            __m256 x[8] = { _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()), _mm256_set1_ps(randomF12()) };
+            const __m256 y = _mm256_set1_ps(randomF12());
+
+            timer.Start();
+            ///////////////////////////////////////
+            int i = Factor;
+#ifdef VC_64BIT
+            __asm__(
+                    ".align 16\n\t0: "
+                    "vmulps  %9,%0,%0"   "\n\t"
+                    "vmulps  %9,%1,%1"   "\n\t"
+                    "vmulps  %9,%2,%2"   "\n\t"
+                    "vmulps  %9,%7,%7"   "\n\t"
+                    "vaddps  %9,%0,%0"   "\n\t"
+                    "vmulps  %9,%3,%3"   "\n\t"
+                    "vaddps  %9,%1,%1"   "\n\t"
+                    "vmulps  %9,%4,%4"   "\n\t"
+                    "vaddps  %9,%2,%2"   "\n\t"
+                    "vaddps  %9,%7,%7"   "\n\t"
+                    "vmulps  %9,%5,%5"   "\n\t"
+                    "vaddps  %9,%3,%3"   "\n\t"
+                    "vaddps  %9,%4,%4"   "\n\t"
+                    "vmulps  %9,%6,%6"   "\n\t"
+                    "vaddps  %9,%5,%5"   "\n\t"
+                    "vaddps  %9,%6,%6"   "\n\t"
+                    "dec     %8"      "\n\t"
+                    "jne 0b"          "\n\t"
+                    : "+x"(x[0]), "+x"(x[1]), "+x"(x[2]), "+x"(x[3]), "+x"(x[4]), "+x"(x[5]), "+x"(x[6]), "+x"(x[7]), "+r"(i)
+                    : "x"(y)
+                       );
+#else
+            __m256 tmp;
+            __asm__(
+                    ".align 16\n\t0: "
+                    "vmulps  %10,%0,%0"   "\n\t"
+                    "vmulps  %10,%1,%1"   "\n\t"
+                    "vmulps  %10,%2,%2"   "\n\t"
+                    "vmovaps  %7,%8,%8"   "\n\t"
+                    "vmulps  %10,%8,%8"   "\n\t"
+                    "vaddps  %10,%0,%0"   "\n\t"
+                    "vmulps  %10,%3,%3"   "\n\t"
+                    "vaddps  %10,%1,%1"   "\n\t"
+                    "vmulps  %10,%4,%4"   "\n\t"
+                    "vaddps  %10,%2,%2"   "\n\t"
+                    "vaddps  %10,%8,%8"   "\n\t"
+                    "vmovaps  %8,%7,%7"   "\n\t"
+                    "vmulps  %10,%5,%5"   "\n\t"
+                    "vaddps  %10,%3,%3"   "\n\t"
+                    "vaddps  %10,%4,%4"   "\n\t"
+                    "vmovaps  %6,%8,%8"   "\n\t"
+                    "vmulps  %10,%8,%8"   "\n\t"
+                    "vaddps  %10,%5,%5"   "\n\t"
+                    "vaddps  %10,%8,%8"   "\n\t"
+                    "vmovaps  %8,%6,%6"   "\n\t"
+                    "dec      %9"      "\n\t"
+                    "jne 0b"         "\n\t"
+                    : "+x"(x[0]), "+x"(x[1]), "+x"(x[2]), "+x"(x[3]), "+x"(x[4]), "+x"(x[5]), "+m"(x[6]), "+m"(x[7]), "+x"(tmp), "+r"(i)
+                    : "x"(y)
+                       );
+#endif
+            ///////////////////////////////////////
+            timer.Stop();
+
+            const int k = _mm256_movemask_ps(_mm256_add_ps(_mm256_add_ps(_mm256_add_ps(x[0], x[1]), _mm256_add_ps(x[2], x[3])), _mm256_add_ps(_mm256_add_ps(x[4], x[5]), _mm256_add_ps(x[7], x[6]))));
+            blackHole &= k;
 #elif VC_IMPL_SSE
             __m128 x[8] = { _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()), _mm_set1_ps(randomF12()) };
             const __m128 y = _mm_set1_ps(randomF12());
