@@ -127,5 +127,11 @@ if(QT4_FOUND)
    endif()
 endif()
 
+if(USE_AVX AND USE_FMA4)
+   add_executable(squaredsum_avx squaredsum.cpp benchmark.cpp)
+   add_target_property(squaredsum_avx COMPILE_FLAGS "-DVC_IMPL=AVX")
+   target_link_libraries(squaredsum_avx Vc ${LIBS} CpuId)
+endif()
+
 exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE CXX_VERSION)
 configure_file(benchmark-all.sh benchmark-all.sh @ONLY)
