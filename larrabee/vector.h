@@ -128,6 +128,8 @@ namespace LRBni
             __mmask k;
     };
 
+    template<> inline int Mask<8u>::count() const { return _mm_countbits_16(k & 0xffu); }
+
 struct ForeachHelper
 {
     unsigned short mask;
@@ -1169,6 +1171,10 @@ template<typename T> class Vector : public VectorBase<T, Vector<T> >, public Sto
         inline T min() const { return VectorHelper<T>::reduce_min(data.v()); }
         inline T product() const { return VectorHelper<T>::reduce_mul(data.v()); }
         inline T sum() const { return VectorHelper<T>::reduce_add(data.v()); }
+        inline T max(Mask m) const;
+        inline T min(Mask m) const;
+        inline T product(Mask m) const;
+        inline T sum(Mask m) const;
 
         Vector sorted() const;
 
