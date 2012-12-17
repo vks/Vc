@@ -41,13 +41,13 @@ template<> struct numeric_limits<Vc::AVX::Vector<T> > : public numeric_limits<T>
 
 #ifndef VC_IMPL_AVX2
 namespace {
-    using Vc::AVX::_mm256_srli_epi32;
+    using Vc::AVX::_srli_epi32;
 }
 #endif
 _VC_NUM_LIM(unsigned short, Vc::AVX::_mm_setallone_si128(), _mm_setzero_si128());
 _VC_NUM_LIM(         short, _mm_srli_epi16(Vc::AVX::_mm_setallone_si128(), 1), Vc::AVX::_mm_setmin_epi16());
-_VC_NUM_LIM(  unsigned int, Vc::AVX::_mm256_setallone_si256(), _mm256_setzero_si256());
-_VC_NUM_LIM(           int, _mm256_srli_epi32(Vc::AVX::_mm256_setallone_si256(), 1), Vc::AVX::_mm256_setmin_epi32());
+_VC_NUM_LIM(  unsigned int, Vc::AVX::_setallone_si256(), _setzero_si256());
+_VC_NUM_LIM(           int, _srli_epi32(Vc::AVX::_setallone_si256(), 1), Vc::AVX::_setmin_epi32());
 #undef _VC_NUM_LIM
 
 } // namespace std

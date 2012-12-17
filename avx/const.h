@@ -99,9 +99,9 @@ namespace AVX
         static inline V Vc_CONST_L highMask() Vc_CONST_R;
     };
 
-    template<> inline Vector<float> Vc_CONST Const<float>::highMask() { return _mm256_broadcast_ss(reinterpret_cast<const float *>(&c_general::highMaskFloat)); }
-    template<> inline Vector<double> Vc_CONST Const<double>::highMask() { return _mm256_broadcast_sd(reinterpret_cast<const double *>(&c_general::highMaskDouble)); }
-    template<> inline Vector<sfloat> Vc_CONST Const<sfloat>::highMask() { return _mm256_broadcast_ss(reinterpret_cast<const float *>(&c_general::highMaskFloat)); }
+    template<> inline Vector<float> Vc_CONST Const<float>::highMask() { return _broadcast8(reinterpret_cast<const float *>(&c_general::highMaskFloat)); }
+    template<> inline Vector<double> Vc_CONST Const<double>::highMask() { return _broadcast4(reinterpret_cast<const double *>(&c_general::highMaskDouble)); }
+    template<> inline Vector<sfloat> Vc_CONST Const<sfloat>::highMask() { return _broadcast8(reinterpret_cast<const float *>(&c_general::highMaskFloat)); }
 } // namespace AVX
 } // namespace Vc
 

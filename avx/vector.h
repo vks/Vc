@@ -418,20 +418,20 @@ typedef ushort_v::Mask ushort_m;
 
 template<typename T> class SwizzledVector : public Vector<T> {};
 
-static inline int_v    min(const int_v    &x, const int_v    &y) { return _mm256_min_epi32(x.data(), y.data()); }
-static inline uint_v   min(const uint_v   &x, const uint_v   &y) { return _mm256_min_epu32(x.data(), y.data()); }
+static inline int_v    min(const int_v    &x, const int_v    &y) { return _min_epi32(x.data(), y.data()); }
+static inline uint_v   min(const uint_v   &x, const uint_v   &y) { return _min_epu32(x.data(), y.data()); }
 static inline short_v  min(const short_v  &x, const short_v  &y) { return _mm_min_epi16(x.data(), y.data()); }
 static inline ushort_v min(const ushort_v &x, const ushort_v &y) { return _mm_min_epu16(x.data(), y.data()); }
-static inline float_v  min(const float_v  &x, const float_v  &y) { return _mm256_min_ps(x.data(), y.data()); }
-static inline sfloat_v min(const sfloat_v &x, const sfloat_v &y) { return _mm256_min_ps(x.data(), y.data()); }
-static inline double_v min(const double_v &x, const double_v &y) { return _mm256_min_pd(x.data(), y.data()); }
-static inline int_v    max(const int_v    &x, const int_v    &y) { return _mm256_max_epi32(x.data(), y.data()); }
-static inline uint_v   max(const uint_v   &x, const uint_v   &y) { return _mm256_max_epu32(x.data(), y.data()); }
+static inline float_v  min(const float_v  &x, const float_v  &y) { return _min_ps(x.data(), y.data()); }
+static inline sfloat_v min(const sfloat_v &x, const sfloat_v &y) { return _min_ps(x.data(), y.data()); }
+static inline double_v min(const double_v &x, const double_v &y) { return _min_pd(x.data(), y.data()); }
+static inline int_v    max(const int_v    &x, const int_v    &y) { return _max_epi32(x.data(), y.data()); }
+static inline uint_v   max(const uint_v   &x, const uint_v   &y) { return _max_epu32(x.data(), y.data()); }
 static inline short_v  max(const short_v  &x, const short_v  &y) { return _mm_max_epi16(x.data(), y.data()); }
 static inline ushort_v max(const ushort_v &x, const ushort_v &y) { return _mm_max_epu16(x.data(), y.data()); }
-static inline float_v  max(const float_v  &x, const float_v  &y) { return _mm256_max_ps(x.data(), y.data()); }
-static inline sfloat_v max(const sfloat_v &x, const sfloat_v &y) { return _mm256_max_ps(x.data(), y.data()); }
-static inline double_v max(const double_v &x, const double_v &y) { return _mm256_max_pd(x.data(), y.data()); }
+static inline float_v  max(const float_v  &x, const float_v  &y) { return _max_ps(x.data(), y.data()); }
+static inline sfloat_v max(const sfloat_v &x, const sfloat_v &y) { return _max_ps(x.data(), y.data()); }
+static inline double_v max(const double_v &x, const double_v &y) { return _max_pd(x.data(), y.data()); }
 
   template<typename T> static inline Vector<T> sqrt (const Vector<T> &x) { return VectorHelper<T>::sqrt(x.data()); }
   template<typename T> static inline Vector<T> rsqrt(const Vector<T> &x) { return VectorHelper<T>::rsqrt(x.data()); }

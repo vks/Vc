@@ -37,15 +37,15 @@ template<> inline Mask<8, 32>::Mask(const Mask<4, 32> &m)
 
 template<unsigned int Size> inline int Mask<Size, 32u>::shiftMask() const
 {
-    return _mm256_movemask_epi8(dataI());
+    return _movemask_epi8(dataI());
 }
 template<unsigned int Size> inline int Mask<Size, 16u>::shiftMask() const
 {
     return _mm_movemask_epi8(dataI());
 }
 
-template<> inline int Mask< 4, 32>::toInt() const { return _mm256_movemask_pd(dataD()); }
-template<> inline int Mask< 8, 32>::toInt() const { return _mm256_movemask_ps(data ()); }
+template<> inline int Mask< 4, 32>::toInt() const { return _movemask_pd(dataD()); }
+template<> inline int Mask< 8, 32>::toInt() const { return _movemask_ps(data ()); }
 template<> inline int Mask< 8, 16>::toInt() const { return _mm_movemask_epi8(_mm_packs_epi16(dataI(), _mm_setzero_si128())); }
 template<> inline int Mask<16, 16>::toInt() const { return _mm_movemask_epi8(dataI()); }
 

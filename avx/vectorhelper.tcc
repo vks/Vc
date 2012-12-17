@@ -31,11 +31,11 @@ namespace AVX
 //// loads
 template<> inline __m256 VectorHelper<__m256>::load(const float *m, AlignedFlag)
 {
-    return _mm256_load_ps(m);
+    return _load_ps(m);
 }
 template<> inline __m256 VectorHelper<__m256>::load(const float *m, UnalignedFlag)
 {
-    return _mm256_loadu_ps(m);
+    return _loadu_ps(m);
 }
 template<> inline __m256 VectorHelper<__m256>::load(const float *m, StreamingAndAlignedFlag)
 {
@@ -46,44 +46,44 @@ template<> inline __m256
     VC_WARN("AVX does not support streaming unaligned loads. Will use non-streaming unaligned load instead.")
 VectorHelper<__m256>::load(const float *m, StreamingAndUnalignedFlag)
 {
-    return _mm256_loadu_ps(m);
+    return _loadu_ps(m);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //// stores
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, AlignedFlag)
 {
-    _mm256_store_ps(mem, x);
+    _store_ps(mem, x);
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, UnalignedFlag)
 {
-    _mm256_storeu_ps(mem, x);
+    _storeu_ps(mem, x);
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, StreamingAndAlignedFlag)
 {
-    _mm256_stream_ps(mem, x);
+    _stream_ps(mem, x);
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, StreamingAndUnalignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), _mm_setallone_si128(), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(_mm256_extractf128_si256(avx_cast<__m256i>(x), 1), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 4));
+    _mm_maskmoveu_si128(_extractf128_si256(avx_cast<__m256i>(x), 1), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 4));
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, const VectorType m, AlignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, const VectorType m, UnalignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, const VectorType m, StreamingAndAlignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), avx_cast<__m128i>(m), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(_mm256_extractf128_si256(avx_cast<__m256i>(x), 1), _mm256_extractf128_si256(avx_cast<__m256i>(m), 1), reinterpret_cast<char *>(mem + 4));
+    _mm_maskmoveu_si128(_extractf128_si256(avx_cast<__m256i>(x), 1), _extractf128_si256(avx_cast<__m256i>(m), 1), reinterpret_cast<char *>(mem + 4));
 }
 inline void VectorHelper<__m256>::store(float *mem, const VectorType x, const VectorType m, StreamingAndUnalignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), avx_cast<__m128i>(m), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(_mm256_extractf128_si256(avx_cast<__m256i>(x), 1), _mm256_extractf128_si256(avx_cast<__m256i>(m), 1), reinterpret_cast<char *>(mem + 4));
+    _mm_maskmoveu_si128(_extractf128_si256(avx_cast<__m256i>(x), 1), _extractf128_si256(avx_cast<__m256i>(m), 1), reinterpret_cast<char *>(mem + 4));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,11 +92,11 @@ inline void VectorHelper<__m256>::store(float *mem, const VectorType x, const Ve
 //// loads
 template<> inline __m256d VectorHelper<__m256d>::load(const double *m, AlignedFlag)
 {
-    return _mm256_load_pd(m);
+    return _load_pd(m);
 }
 template<> inline __m256d VectorHelper<__m256d>::load(const double *m, UnalignedFlag)
 {
-    return _mm256_loadu_pd(m);
+    return _loadu_pd(m);
 }
 template<> inline __m256d VectorHelper<__m256d>::load(const double *m, StreamingAndAlignedFlag)
 {
@@ -108,44 +108,44 @@ template<> inline __m256d
     VC_WARN("AVX does not support streaming unaligned loads. Will use non-streaming unaligned load instead.")
 VectorHelper<__m256d>::load(const double *m, StreamingAndUnalignedFlag)
 {
-    return _mm256_loadu_pd(m);
+    return _loadu_pd(m);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //// stores
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, AlignedFlag)
 {
-    _mm256_store_pd(mem, x);
+    _store_pd(mem, x);
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, UnalignedFlag)
 {
-    _mm256_storeu_pd(mem, x);
+    _storeu_pd(mem, x);
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, StreamingAndAlignedFlag)
 {
-    _mm256_stream_pd(mem, x);
+    _stream_pd(mem, x);
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, StreamingAndUnalignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), _mm_setallone_si128(), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(avx_cast<__m128i>(_mm256_extractf128_pd(x, 1)), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 2));
+    _mm_maskmoveu_si128(avx_cast<__m128i>(_extractf128_pd(x, 1)), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 2));
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, const VectorType m, AlignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, const VectorType m, UnalignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, const VectorType m, StreamingAndAlignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), avx_cast<__m128i>(m), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(avx_cast<__m128i>(_mm256_extractf128_pd(x, 1)), avx_cast<__m128i>(_mm256_extractf128_pd(m, 1)), reinterpret_cast<char *>(mem + 2));
+    _mm_maskmoveu_si128(avx_cast<__m128i>(_extractf128_pd(x, 1)), avx_cast<__m128i>(_extractf128_pd(m, 1)), reinterpret_cast<char *>(mem + 2));
 }
 inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, const VectorType m, StreamingAndUnalignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), avx_cast<__m128i>(m), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(avx_cast<__m128i>(_mm256_extractf128_pd(x, 1)), avx_cast<__m128i>(_mm256_extractf128_pd(m, 1)), reinterpret_cast<char *>(mem + 2));
+    _mm_maskmoveu_si128(avx_cast<__m128i>(_extractf128_pd(x, 1)), avx_cast<__m128i>(_extractf128_pd(m, 1)), reinterpret_cast<char *>(mem + 2));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // (u)int_v
@@ -153,11 +153,11 @@ inline void VectorHelper<__m256d>::store(double *mem, const VectorType x, const 
 //// loads
 template<typename T> inline __m256i VectorHelper<__m256i>::load(const T *m, AlignedFlag)
 {
-    return _mm256_load_si256(reinterpret_cast<const __m256i *>(m));
+    return _load_si256(reinterpret_cast<const __m256i *>(m));
 }
 template<typename T> inline __m256i VectorHelper<__m256i>::load(const T *m, UnalignedFlag)
 {
-    return _mm256_loadu_si256(reinterpret_cast<const __m256i *>(m));
+    return _loadu_si256(reinterpret_cast<const __m256i *>(m));
 }
 template<typename T> inline __m256i VectorHelper<__m256i>::load(const T *m, StreamingAndAlignedFlag)
 {
@@ -168,34 +168,34 @@ template<typename T> inline __m256i
     VC_WARN("AVX does not support streaming unaligned loads. Will use non-streaming unaligned load instead.")
 VectorHelper<__m256i>::load(const T *m, StreamingAndUnalignedFlag)
 {
-    return _mm256_loadu_si256(reinterpret_cast<const __m256i *>(m));
+    return _loadu_si256(reinterpret_cast<const __m256i *>(m));
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //// stores
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, AlignedFlag)
 {
-    _mm256_store_si256(reinterpret_cast<VectorType *>(mem), x);
+    _store_si256(reinterpret_cast<VectorType *>(mem), x);
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, UnalignedFlag)
 {
-    _mm256_storeu_si256(reinterpret_cast<VectorType *>(mem), x);
+    _storeu_si256(reinterpret_cast<VectorType *>(mem), x);
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, StreamingAndAlignedFlag)
 {
-    _mm256_stream_si256(reinterpret_cast<VectorType *>(mem), x);
+    _stream_si256(reinterpret_cast<VectorType *>(mem), x);
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, StreamingAndUnalignedFlag)
 {
     _mm_maskmoveu_si128(avx_cast<__m128i>(x), _mm_setallone_si128(), reinterpret_cast<char *>(mem));
-    _mm_maskmoveu_si128(_mm256_extractf128_si256(x, 1), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 4));
+    _mm_maskmoveu_si128(_extractf128_si256(x, 1), _mm_setallone_si128(), reinterpret_cast<char *>(mem + 4));
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, const VectorType m, AlignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, const VectorType m, UnalignedFlag)
 {
-    _mm256_maskstore(mem, m, x);
+    _maskstore(mem, m, x);
 }
 template<typename T> inline void VectorHelper<__m256i>::store(T *mem, const VectorType x, const VectorType m, StreamingAndAlignedFlag)
 {

@@ -46,11 +46,11 @@ template<unsigned int VectorSize> class Mask<VectorSize, 32u>
 
         inline Mask() {}
         inline Mask(const __m256  &x) : k(x) {}
-        inline Mask(const __m256d &x) : k(_mm256_castpd_ps(x)) {}
-        inline Mask(const __m256i &x) : k(_mm256_castsi256_ps(x)) {}
-        inline explicit Mask(VectorSpecialInitializerZero::ZEnum) : k(_mm256_setzero_ps()) {}
-        inline explicit Mask(VectorSpecialInitializerOne::OEnum) : k(_mm256_setallone_ps()) {}
-        inline explicit Mask(bool b) : k(b ? _mm256_setallone_ps() : _mm256_setzero_ps()) {}
+        inline Mask(const __m256d &x) : k(_castpd_ps(x)) {}
+        inline Mask(const __m256i &x) : k(_castsi256_ps(x)) {}
+        inline explicit Mask(VectorSpecialInitializerZero::ZEnum) : k(_setzero_ps()) {}
+        inline explicit Mask(VectorSpecialInitializerOne::OEnum) : k(_setallone_ps()) {}
+        inline explicit Mask(bool b) : k(b ? _setallone_ps() : _setzero_ps()) {}
         inline Mask(const Mask &rhs) : k(rhs.k) {}
         inline Mask(const Mask<VectorSize, 16u> &rhs) : k(avx_cast<__m256>(concat(
                         _mm_unpacklo_epi16(rhs.dataI(), rhs.dataI()),
@@ -58,25 +58,25 @@ template<unsigned int VectorSize> class Mask<VectorSize, 32u>
         inline Mask(const Mask<VectorSize * 2, 32u> &m);
         inline Mask(const Mask<VectorSize / 2, 32u> &m);
 
-        inline bool operator==(const Mask &rhs) const { return 0 != _mm256_testc_ps(k, rhs.k); }
-        inline bool operator!=(const Mask &rhs) const { return 0 == _mm256_testc_ps(k, rhs.k); }
+        inline bool operator==(const Mask &rhs) const { return 0 != _testc_ps(k, rhs.k); }
+        inline bool operator!=(const Mask &rhs) const { return 0 == _testc_ps(k, rhs.k); }
 
-        inline Mask operator&&(const Mask &rhs) const { return _mm256_and_ps(k, rhs.k); }
-        inline Mask operator& (const Mask &rhs) const { return _mm256_and_ps(k, rhs.k); }
-        inline Mask operator||(const Mask &rhs) const { return _mm256_or_ps (k, rhs.k); }
-        inline Mask operator| (const Mask &rhs) const { return _mm256_or_ps (k, rhs.k); }
-        inline Mask operator^ (const Mask &rhs) const { return _mm256_xor_ps(k, rhs.k); }
-        inline Mask operator!() const { return _mm256_andnot_ps(data(), _mm256_setallone_ps()); }
+        inline Mask operator&&(const Mask &rhs) const { return _and_ps(k, rhs.k); }
+        inline Mask operator& (const Mask &rhs) const { return _and_ps(k, rhs.k); }
+        inline Mask operator||(const Mask &rhs) const { return _or_ps (k, rhs.k); }
+        inline Mask operator| (const Mask &rhs) const { return _or_ps (k, rhs.k); }
+        inline Mask operator^ (const Mask &rhs) const { return _xor_ps(k, rhs.k); }
+        inline Mask operator!() const { return _andnot_ps(data(), _setallone_ps()); }
 
-        inline Mask &operator&=(const Mask &rhs) { k = _mm256_and_ps(k, rhs.k); return *this; }
-        inline Mask &operator|=(const Mask &rhs) { k = _mm256_or_ps (k, rhs.k); return *this; }
-        inline Mask &operator^=(const Mask &rhs) { k = _mm256_xor_ps(k, rhs.k); return *this; }
+        inline Mask &operator&=(const Mask &rhs) { k = _and_ps(k, rhs.k); return *this; }
+        inline Mask &operator|=(const Mask &rhs) { k = _or_ps (k, rhs.k); return *this; }
+        inline Mask &operator^=(const Mask &rhs) { k = _xor_ps(k, rhs.k); return *this; }
 
         // no need for expression template optimizations because cmp(n)eq for floats are not bitwise
         // compares
-        inline bool isFull () const { return 0 != _mm256_testc_ps(k, _mm256_setallone_ps()); }
-        inline bool isEmpty() const { return 0 != _mm256_testz_ps(k, k); }
-        inline bool isMix  () const { return 0 != _mm256_testnzc_ps(k, _mm256_setallone_ps()); }
+        inline bool isFull () const { return 0 != _testc_ps(k, _setallone_ps()); }
+        inline bool isEmpty() const { return 0 != _testz_ps(k, k); }
+        inline bool isMix  () const { return 0 != _testnzc_ps(k, _setallone_ps()); }
 
 #ifndef VC_NO_AUTOMATIC_BOOL_FROM_MASK
         inline operator bool() const { return isFull(); }
@@ -86,8 +86,8 @@ template<unsigned int VectorSize> class Mask<VectorSize, 32u>
         int Vc_CONST_L toInt() const Vc_CONST_R;
 
         inline _M256  data () const { return k; }
-        inline _M256I dataI() const { return _mm256_castps_si256(k); }
-        inline _M256D dataD() const { return _mm256_castps_pd(k); }
+        inline _M256I dataI() const { return _castps_si256(k); }
+        inline _M256D dataD() const { return _castps_pd(k); }
 
         bool operator[](int index) const;
 
@@ -123,7 +123,7 @@ template<unsigned int VectorSize> class Mask<VectorSize, 16u>
         inline explicit Mask(bool b) : k(b ? _mm_setallone_ps() : _mm_setzero_ps()) {}
         inline Mask(const Mask &rhs) : k(rhs.k) {}
         inline Mask(const Mask<VectorSize, 32u> &rhs) : k(avx_cast<__m128>(
-                _mm_packs_epi32(avx_cast<__m128i>(rhs.data()), _mm256_extractf128_si256(rhs.dataI(), 1)))) {}
+                _mm_packs_epi32(avx_cast<__m128i>(rhs.data()), _extractf128_si256(rhs.dataI(), 1)))) {}
         inline Mask(const Mask<VectorSize / 2, 16u> *a) : k(avx_cast<__m128>(
                 _mm_packs_epi16(a[0].dataI(), a[1].dataI()))) {}
 
