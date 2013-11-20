@@ -38,7 +38,7 @@
 #endif
 
 #if __cplusplus < 201103
-#if (defined VC_MSVC && VC_MSVC >= 160000000) || (defined VC_GCC && VC_GCC >= 0x40600) || (defined VC_ICC && VC_ICC >= 20120731)
+#if (defined VC_MSVC && VC_MSVC >= 180021114) || (defined VC_GCC && VC_GCC >= 0x40600) || (defined VC_ICC && VC_ICC >= 20120731)
 // these compilers still work, even if they don't define __cplusplus as expected
 #else
 #error "Vc requires support for C++11."
