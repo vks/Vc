@@ -63,10 +63,10 @@ template<typename T> class Mask
 {
     friend class Mask<  double>;
     friend class Mask<   float>;
-    friend class Mask< int32_t>;
-    friend class Mask<uint32_t>;
-    friend class Mask< int16_t>;
-    friend class Mask<uint16_t>;
+    friend class Mask< int>;
+    friend class Mask<unsigned int>;
+    friend class Mask< short>;
+    friend class Mask<unsigned short>;
 
     public:
         FREE_STORE_OPERATORS_ALIGNED(16)
