@@ -63,14 +63,16 @@
 #define VC_HAVE_ATTRIBUTE_WARNING 1
 #endif
 
-#if defined(VC_MSVC) && VC_MSVC < 180000000
+#if defined(VC_MSVC) && VC_MSVC < 180021114
 // MSVC doesn't know constexpr and noexcept
 // first include the check that forbids macroizing keywords >:)
 #include <xkeycheck.h>
 #ifndef constexpr
-#define constexpr inline __forceinline
+#define constexpr const
 #endif
+#if VC_MSVC < 180000000
 #define Vc__NO_NOEXCEPT 1
+#endif
 #endif
 
 #if defined(VC_ICC)
