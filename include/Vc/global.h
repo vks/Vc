@@ -358,6 +358,33 @@
 #define Vc__SYMBOL_VERSION v0
 #endif
 
+#if defined(VC_MSVC) && VC_MSVC < 190000000
+namespace Vc {}
+#define Vc_HACK_NAMESPACE_CAT_(a, b) a##b
+#define Vc_HACK_NAMESPACE_CAT(a, b) Vc_HACK_NAMESPACE_CAT_(a, b)
+#define Vc_HACK_NAMESPACE(NAME) \
+namespace Vc_HACK_NAMESPACE_CAT(Vc_, NAME) { using namespace Vc; } \
+namespace Vc { namespace NAME = Vc_HACK_NAMESPACE_CAT(Vc_, NAME); }
+Vc_HACK_NAMESPACE(Internal)
+Vc_HACK_NAMESPACE(Common)
+Vc_HACK_NAMESPACE(Scalar)
+Vc_HACK_NAMESPACE(SSE)
+Vc_HACK_NAMESPACE(AVX)
+Vc_HACK_NAMESPACE(AVX2)
+Vc_HACK_NAMESPACE(SseIntrinsics)
+Vc_HACK_NAMESPACE(AvxIntrinsics)
+Vc_HACK_NAMESPACE(Mem)
+Vc_HACK_NAMESPACE(Reg)
+
+#define Vc_NAMESPACE_BEGIN(NAME) \
+namespace Vc_HACK_NAMESPACE_CAT(Vc_, NAME) {
+
+#define Vc_PUBLIC_NAMESPACE_BEGIN \
+namespace Vc {
+
+#define Vc_NAMESPACE_END }
+#define Vc_IMPL_NAMESPACE_END Vc_NAMESPACE_END
+#else
 #define Vc_NAMESPACE_BEGIN(NAME) \
     namespace Vc { \
         inline namespace Vc__SYMBOL_VERSION { \
@@ -370,6 +397,7 @@
 
 #define Vc_NAMESPACE_END }}}
 #define Vc_IMPL_NAMESPACE_END Vc_NAMESPACE_END
+#endif
 
 Vc_PUBLIC_NAMESPACE_BEGIN
 Vc_NAMESPACE_END
