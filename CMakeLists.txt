@@ -50,6 +50,8 @@ else()
             message(FATAL_ERROR "Vc 1.x requires C++11 support. It seems this is not available. If this was incorrectly determined please notify vc-devel@compeng.uni-frankfurt.de")
          endif()
       endif()
+   elseif(Vc_MSVC_VERSION LESS 180021114)
+      message(FATAL_ERROR "Vc 1.x requires C++11 support. This requires at least Visual Studio 2013 with the Nov 2013 CTP.")
    endif()
 
    if(Vc_COMPILER_IS_GCC)
