@@ -148,7 +148,7 @@
 
 #ifndef VC_IMPL
 
-#  if defined(__ARM_NEON__)
+#  if defined(__ARM_NEON)
 #    define VC_IMPL_NEON 1
 #  elif defined(__MIC__)
 #    define VC_IMPL_MIC 1
