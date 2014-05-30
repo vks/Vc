@@ -28,6 +28,7 @@
 #include "sse/types.h"
 #include "avx/types.h"
 #include "mic/types.h"
+#include "neon/types.h"
 
 // 2. forward declare simdarray types
 #include "common/simdarrayfwd.h"
@@ -68,6 +69,11 @@
 # include "mic/simd_cast.h"
 #endif
 
+#if defined(VC_IMPL_NEON)
+# include "neon/vector.h"
+# include "neon/simd_cast.h"
+#endif
+
 #include "common/simdarray.h"
 // XXX See bottom of common/simd_mask_array.h:
 //#include "common/simd_cast_caller.tcc"
@@ -95,6 +101,10 @@ namespace Vc_VERSIONED_NAMESPACE {
 # include "mic/helperimpl.h"
 # include "mic/math.h"
 # include "mic/simd_cast_caller.tcc"
+#endif
+#if defined(VC_IMPL_NEON)
+# include "neon/math.h"
+# include "neon/simd_cast_caller.tcc"
 #endif
 
 #include "common/math.h"

@@ -111,6 +111,7 @@
 #define AVX    0x00800000
 #define AVX2   0x00900000
 #define MIC    0x00A00000
+#define NEON   0x00B00000
 
 #define XOP    0x00000001
 #define FMA4   0x00000002
@@ -147,7 +148,9 @@
 
 #ifndef VC_IMPL
 
-#  if defined(__MIC__)
+#  if defined(__ARM_NEON__)
+#    define VC_IMPL_NEON 1
+#  elif defined(__MIC__)
 #    define VC_IMPL_MIC 1
 #  elif defined(__AVX2__)
 #    define VC_IMPL_AVX2 1
@@ -210,6 +213,8 @@
 #    ifdef __POPCNT__
 #      define VC_IMPL_POPCNT 1
 #    endif
+#  elif (VC_IMPL & IMPL_MASK) == NEON
+#    define VC_IMPL_NEON 1
 #  elif (VC_IMPL & IMPL_MASK) == AVX2 // AVX2 supersedes SSE
 #    define VC_IMPL_AVX2 1
 #    define VC_IMPL_AVX 1
@@ -319,6 +324,7 @@
 #undef AVX
 #undef AVX2
 #undef MIC
+#undef NEON
 
 #undef XOP
 #undef FMA4
@@ -426,7 +432,7 @@ enum MallocAlignment {
  *
  * \see ExtraInstructions
  */
-enum Implementation { // TODO: make enum class of uint32_t
+enum Implementation {  // TODO: make enum class of uint32_t
     /// uses only fundamental types
     ScalarImpl,
     /// x86 SSE + SSE2
@@ -445,8 +451,9 @@ enum Implementation { // TODO: make enum class of uint32_t
     AVX2Impl,
     /// Intel Xeon Phi
     MICImpl,
-    ImplementationMask = 0xfff
-};
+    /// ARM NEON
+    NeonImpl,
+    ImplementationMask = 0xfff };
 
 /**
  * \ingroup Utilities
@@ -482,6 +489,9 @@ enum ExtraInstructions { // TODO: make enum class of uint32_t
 #ifdef VC_IMPL_Scalar
 #define VC_IMPL ::Vc::ScalarImpl
 #define Vc_IMPL_NAMESPACE Scalar
+#elif defined(VC_IMPL_NEON)
+#define VC_IMPL ::Vc::NeonImpl
+#define Vc_IMPL_NAMESPACE NEON
 #elif defined(VC_IMPL_MIC)
 #define VC_IMPL ::Vc::MICImpl
 #define Vc_IMPL_NAMESPACE MIC
