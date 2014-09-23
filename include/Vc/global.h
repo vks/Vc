@@ -308,7 +308,7 @@
 #    define VC_IMPL_SSE 1
 #endif
 
-# if !defined(VC_IMPL_Scalar) && !defined(VC_IMPL_SSE) && !defined(VC_IMPL_AVX) && !defined(VC_IMPL_MIC)
+# if !defined(VC_IMPL_Scalar) && !defined(VC_IMPL_SSE) && !defined(VC_IMPL_AVX) && !defined(VC_IMPL_MIC) && !defined(VC_IMPL_NEON)
 #  error "No suitable Vc implementation was selected! Probably VC_IMPL was set to an invalid value."
 # elif defined(VC_IMPL_SSE) && !defined(VC_IMPL_SSE2)
 #  error "SSE requested but no SSE2 support. Vc needs at least SSE2!"
