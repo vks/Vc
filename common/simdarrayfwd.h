@@ -76,20 +76,20 @@ using select_best_vector_type =
 #ifdef VC_IMPL_AVX2
                                           Vc::AVX2::Vector<T>,
                                           Vc::SSE::Vector<T>,
-                                          Vc::Scalar::Vector<T>
 #elif defined(VC_IMPL_AVX)
                                           Vc::AVX::Vector<T>,
                                           Vc::SSE::Vector<T>,
-                                          Vc::Scalar::Vector<T>
-#elif defined(VC_IMPL_Scalar)
-                                          Vc::Scalar::Vector<T>
 #elif defined(VC_IMPL_SSE)
                                           Vc::SSE::Vector<T>,
-                                          Vc::Scalar::Vector<T>
 #elif defined(VC_IMPL_MIC)
                                           Vc::MIC::Vector<T>,
-                                          Vc::Scalar::Vector<T>
+#elif defined(VC_IMPL_NEON)
+                                          Vc::NEON::Vector<T>,
+#elif defined(VC_IMPL_Scalar)
+#else
+#error "Please add the necessary types for this implementation."
 #endif
+                                          Vc::Scalar::Vector<T>
                                           >::type;
 //}}}
 /// @}
