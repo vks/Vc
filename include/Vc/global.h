@@ -344,6 +344,8 @@
 #define VC_DEFAULT_IMPL_AVX
 #elif defined VC_IMPL_SSE
 #define VC_DEFAULT_IMPL_SSE
+#elif defined VC_IMPL_NEON
+#define VC_DEFAULT_IMPL_NEON
 #elif defined VC_IMPL_Scalar
 #define VC_DEFAULT_IMPL_Scalar
 #else
