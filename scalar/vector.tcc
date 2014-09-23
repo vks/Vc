@@ -234,10 +234,13 @@ template<> Vc_INTRINSIC Vector<float> Vector<float>::Random()
 }
 template<> Vc_INTRINSIC Vector<double> Vector<double>::Random()
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
     typedef unsigned long long uint64 Vc_MAY_ALIAS;
     uint64 state0 = *reinterpret_cast<const uint64 *>(&Common::RandomState[8]);
     state0 = (state0 * 0x5deece66dull + 11) & 0x000fffffffffffffull;
     *reinterpret_cast<uint64 *>(&Common::RandomState[8]) = state0;
+#pragma GCC diagnostic pop
     union { unsigned long long i; double f; } x;
     x.i = state0 | 0x3ff0000000000000ull;
     return double_v(x.f - 1.);
