@@ -62,7 +62,9 @@ template <typename T> static constexpr bool convertsToSomeVector()
 
 static_assert(isNarrowingFloatConversion<double, float>(), "");
 static_assert(isNarrowingFloatConversion<long double, float>(), "");
-static_assert(isNarrowingFloatConversion<long double, double>(), "");
+static_assert(sizeof(long double) == sizeof(double) ||
+                  isNarrowingFloatConversion<long double, double>(),
+              "");
 static_assert(is_convertible<double, float_v>::value, "");
 static_assert(false == ((is_convertible<double, float_v>::value ||
                          (isVector<double>() && is_convertible<float_v, double>::value)) &&
