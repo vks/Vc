@@ -130,7 +130,12 @@ class
     alignas((((Common::nextPowerOfTwo((N + VectorSize - 1) / VectorSize) *
                sizeof(VectorType)) -
               1) &
-             127) +
+#ifdef __arm__
+             63
+#else
+             127
+#endif
+             ) +
             1)
 #endif
         simdarray;
@@ -146,7 +151,12 @@ class
     alignas((((Common::nextPowerOfTwo((N + VectorSize - 1) / VectorSize) *
                sizeof(typename VectorType::Mask)) -
               1) &
-             127) +
+#ifdef __arm__
+             63
+#else
+             127
+#endif
+             ) +
             1)
 #endif
         simd_mask_array;
