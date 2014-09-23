@@ -76,11 +76,7 @@ bool isImplementationSupported(Implementation impl)
         return CpuId::processorFamily() == 0xB && CpuId::processorModel() == 0x1
             && CpuId::isIntel();
     case NeonImpl:
-#ifdef __ARM_NEON
-        return true;
-#else
         return false;
-#endif
     case ImplementationMask:
         return false;
     }
