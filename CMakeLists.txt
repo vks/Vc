@@ -170,6 +170,7 @@ if(NOT ROOT_RELEASE)
       vc_compile_for_all_implementations(_srcs src/avx2_sorthelper.cpp ONLY AVX2)
    elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
       set(USE_NEON TRUE)
+      AddCompilerFlag(-mfpu=neon)
       add_custom_target(NEON COMMENT "build NEON code" VERBATIM)
 
       list(APPEND _srcs src/support_arm.cpp)
