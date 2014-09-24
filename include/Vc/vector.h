@@ -103,6 +103,7 @@ namespace Vc_VERSIONED_NAMESPACE {
 # include "mic/simd_cast_caller.tcc"
 #endif
 #if defined(VC_IMPL_NEON)
+# include "neon/helperimpl.h"
 # include "neon/math.h"
 # include "neon/simd_cast_caller.tcc"
 #endif
@@ -128,6 +129,7 @@ namespace Vc_VERSIONED_NAMESPACE
   using Vc_IMPL_NAMESPACE::sqrt;
   using Vc_IMPL_NAMESPACE::rsqrt;
   using Vc_IMPL_NAMESPACE::abs;
+  /*
   using Vc_IMPL_NAMESPACE::sin;
   using Vc_IMPL_NAMESPACE::asin;
   using Vc_IMPL_NAMESPACE::cos;
@@ -149,6 +151,7 @@ namespace Vc_VERSIONED_NAMESPACE
   using Vc_IMPL_NAMESPACE::isinf;
   using Vc_IMPL_NAMESPACE::isnan;
   using Vc_IMPL_NAMESPACE::forceToRegisters;
+  */
   using Vc_IMPL_NAMESPACE::Vector;
   using Vc_IMPL_NAMESPACE::Mask;
 
@@ -186,6 +189,7 @@ namespace std
   using Vc::min;
   using Vc::max;
 
+  /*
   using Vc::abs;
   using Vc::asin;
   using Vc::atan;
@@ -205,6 +209,7 @@ namespace std
 
   using Vc::isfinite;
   using Vc::isnan;
+  */
 } // namespace std
 #endif
 
