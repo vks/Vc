@@ -122,8 +122,8 @@ using select_best_vector_type =
 template <
     typename T, std::size_t N,
     typename VectorType = Common::select_best_vector_type<T, N>,
-    std::size_t VectorSize = VectorType::size()  // this last parameter is only used for
-                                                 // specialization of N == VectorSize
+    std::size_t VectorSize = VectorType::Size  // this last parameter is only used for
+                                               // specialization of N == VectorSize
     >
 class
 #ifndef VC_ICC
@@ -138,13 +138,13 @@ class
              ) +
             1)
 #endif
-        simdarray;
+    simdarray;
 
 template <
     typename T, std::size_t N,
     typename VectorType = Common::select_best_vector_type<T, N>,
-    std::size_t VectorSize = VectorType::size()  // this last parameter is only used for
-                                                 // specialization of N == VectorSize
+    std::size_t VectorSize = VectorType::Size  // this last parameter is only used for
+                                               // specialization of N == VectorSize
     >
 class
 #ifndef VC_ICC
@@ -159,7 +159,7 @@ class
              ) +
             1)
 #endif
-        simd_mask_array;
+    simd_mask_array;
 
 /** \internal
  * Simple traits for simdarray to easily access internal types of non-atomic simdarray
