@@ -38,6 +38,7 @@ template<typename EntryType, typename VectorType> inline EntryType &accessScalar
 template<typename EntryType, typename VectorType> inline EntryType accessScalar(const VectorType &d, size_t i) { return accessScalar<EntryType>(d[i/4], i % 4); }
 #endif
 
+#ifdef VC_IMPL_SSE
 template<> Vc_ALWAYS_INLINE double &accessScalar<double, __m128d>(__m128d &d, size_t i) { return d.m128d_f64[i]; }
 template<> Vc_ALWAYS_INLINE float  &accessScalar<float , __m128 >(__m128  &d, size_t i) { return d.m128_f32[i]; }
 template<> Vc_ALWAYS_INLINE short  &accessScalar<short , __m128i>(__m128i &d, size_t i) { return d.m128i_i16[i]; }
@@ -55,6 +56,7 @@ template<> Vc_ALWAYS_INLINE int  accessScalar<int , __m128i>(const __m128i &d, s
 template<> Vc_ALWAYS_INLINE unsigned int  accessScalar<unsigned int , __m128i>(const __m128i &d, size_t i) { return d.m128i_u32[i]; }
 template<> Vc_ALWAYS_INLINE char  accessScalar<char , __m128i>(const __m128i &d, size_t i) { return d.m128i_i8[i]; }
 template<> Vc_ALWAYS_INLINE unsigned char  accessScalar<unsigned char , __m128i>(const __m128i &d, size_t i) { return d.m128i_u8[i]; }
+#endif
 
 #ifdef VC_IMPL_AVX
 template<> Vc_ALWAYS_INLINE double &accessScalar<double, __m256d>(__m256d &d, size_t i) { return d.m256d_f64[i]; }
@@ -73,7 +75,7 @@ template<> Vc_ALWAYS_INLINE unsigned int  accessScalar<unsigned int , __m256i>(c
 #endif
 #endif
 
-#ifdef VC_USE_BUILTIN_VECTOR_TYPES
+#if defined VC_USE_BUILTIN_VECTOR_TYPES
 template<typename EntryType, typename VectorType> struct GccTypeHelper;
 template<> struct GccTypeHelper<double        , __m128d> { typedef  __v2df Type; };
 template<> struct GccTypeHelper<float         , __m128 > { typedef  __v4sf Type; };
