@@ -93,7 +93,7 @@
 #  define VC_HAVE_STD_MAX_ALIGN_T 1
 #endif
 
-#if defined(VC_GCC) || defined(VC_CLANG)
+#if (defined(VC_GCC) || defined(VC_CLANG)) && defined VC_IMPL_SSE
 #define VC_USE_BUILTIN_VECTOR_TYPES
 #endif
 
