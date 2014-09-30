@@ -751,17 +751,6 @@ namespace AVX2
 }
 namespace Vc_AVX_NAMESPACE
 {
-    template<typename T> struct IndexTypeHelper;
-    template<> struct IndexTypeHelper<         char > { typedef unsigned char  Type; };
-    template<> struct IndexTypeHelper<  signed char > { typedef unsigned char  Type; };
-    template<> struct IndexTypeHelper<unsigned char > { typedef unsigned char  Type; };
-    template<> struct IndexTypeHelper<         short> { typedef unsigned short Type; };
-    template<> struct IndexTypeHelper<unsigned short> { typedef unsigned short Type; };
-    template<> struct IndexTypeHelper<         int  > { typedef          int   Type; };
-    template<> struct IndexTypeHelper<unsigned int  > { typedef          int   Type; };
-    template<> struct IndexTypeHelper<         float> { typedef          int   Type; };
-    template<> struct IndexTypeHelper<        double> { typedef          int   Type; }; // _M128I based int32 would be nice
-
     template<typename T> struct VectorTypeHelper;
     template<> struct VectorTypeHelper<         char > { typedef __m128i Type; };
     template<> struct VectorTypeHelper<  signed char > { typedef __m128i Type; };
@@ -770,6 +759,10 @@ namespace Vc_AVX_NAMESPACE
     template<> struct VectorTypeHelper<unsigned short> { typedef __m128i Type; };
     template<> struct VectorTypeHelper<         int  > { typedef __m256i Type; };
     template<> struct VectorTypeHelper<unsigned int  > { typedef __m256i Type; };
+    template<> struct VectorTypeHelper<         long > { typedef __m256i Type; };
+    template<> struct VectorTypeHelper<unsigned long > { typedef __m256i Type; };
+    template<> struct VectorTypeHelper<         long long> { typedef __m256i Type; };
+    template<> struct VectorTypeHelper<unsigned long long> { typedef __m256i Type; };
     template<> struct VectorTypeHelper<         float> { typedef __m256  Type; };
     template<> struct VectorTypeHelper<        double> { typedef __m256d Type; };
 
