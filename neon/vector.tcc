@@ -69,6 +69,16 @@ template <> Vc_INTRINSIC Vc_PURE int_v int_v::operator-(const int_v &x) const
 {
     return vsubq_s32(d.v(), x.d.v());
 }
+template <> Vc_INTRINSIC Vc_PURE int_v int_v::operator*(const int_v &x) const
+{
+	return vmulq_s32(d.v(), x.d.v());		
+}
+
+/*template <> Vc_PURE_L int_v int_v::operator/(const int_v &x) const Vc_PURE_R
+{
+	return d.v() / x.d.v(); 
+}*/
+
 template <> Vc_INTRINSIC int_v int_v::Random()
 {
     int_v a;
