@@ -270,7 +270,8 @@ if(OBJDUMP)
 
    test_abi(SSE  ${_sse2_flag})
    test_abi(AVX  ${_avx_flag})
-   test_abi(AVX2 ${_avx2_flag})
+   # TODO: reenable for AVX2
+   #test_abi(AVX2 ${_avx2_flag})
    if(MIC_NATIVE_FOUND)
       find_program(MIC_OBJDUMP x86_64-k1om-linux-objdump PATHS ENV PATH "${MIC_TARGET_TOOLS_DIR}/bin")
       if(MIC_OBJDUMP)
