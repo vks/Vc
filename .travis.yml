@@ -31,7 +31,7 @@ install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install coreutils gcc clang; fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export CMAKE=$(greadlink -f "cmake-3.3.2-Darwin-x86_64/CMake.app/Contents/bin/cmake"); fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export CTEST=$(greadlink -f "cmake-3.3.2-Darwin-x86_64/CMake.app/Contents/bin/ctest"); fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" && "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 before_script:
     - $CMAKE --version
