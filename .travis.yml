@@ -24,8 +24,8 @@ before_install:
     - tar xf cmake.tar.gz
 
 install:
-    - export CMAKE=$(readlink "cmake-3.3.2-Linux-x86_64/bin/cmake")
-    - export CTEST=$(readlink "cmake-3.3.2-Linux-x86_64/bin/ctest")
+    - export CMAKE=$(readlink "cmake/bin/cmake")
+    - export CTEST=$(readlink "cmake/bin/ctest")
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 before_script:
